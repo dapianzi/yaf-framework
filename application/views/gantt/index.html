@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>项目规划</title>
+</head>
+<body>
+
+<div class="">
+    <li class="">
+        <?php
+        foreach ($projects as $p) {
+            echo '<li><a href="'. $BASE_URI .'/Gantt/project/id/'. $p['id'] .'">'. $p['name'] .'</a></li>';
+        }
+        ?>
+    </ul>
+</div>
+
+</body>
+</html>

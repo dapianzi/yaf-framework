@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Project progress</title>
+    <style type="text/css" rel="stylesheet">
+        body{margin:0;padding:0}
+        .project{max-width:10.8rem;margin:0.15rem; clear:both; font-size:0.2rem;}
+        .project-name{width:30%; float: left; height:0.4rem; line-height:0.4rem;}
+        .progress-bar-bg{width:70%; float:left; height:0.1rem; box-sizing: border-box; margin:0.15rem 0rem; background:orange; border-radius: 0.05rem;}
+        .progress-bar{width:0; height:100%;background: lightgreen; border-radius: 0.05rem;}
+        @media screen and (max-device-width: 720px) {
+            .progress-bar-bg{width:100%; margin-top: 0.05rem;}
+        }
+    </style>
+    <script type="text/javascript" src="<?php echo $BASE_URI; ?>/public/static/js/init-rem.js"></script>
+    <script type="text/javascript" src="<?php echo $BASE_URI; ?>/public/static/js/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+           $('.progress-bar').each(function(elem, idx){
+               $(this).css({'width': $(this).data('progress') + '%'});
+           })
+        });
+    </script>
+</head>
+<body>
+    <?php foreach($progress as $p) { ?>
+    <div class="project">
+        <div class="project-name"><?php echo $p['name']; ?></div>
+        <div class="progress-bar-bg"><div class="progress-bar" data-progress="<?php echo $p['progress']; ?>"></div></div>
+    </div>
+    <?php } ?>
+</body>
+</html>
