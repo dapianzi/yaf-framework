@@ -15,11 +15,11 @@ class Fn {
         echo '</pre>';
     }
 
-    public static function ajax_error($err='') {
+    public static function ajaxError($err='') {
         return self::ajaxReturn(-1, $err);
     }
 
-    public static function ajax_success($data='') {
+    public static function ajaxSuccess($data='') {
         return self::ajaxReturn(0, $data);
     }
 
@@ -30,4 +30,27 @@ class Fn {
             'content' => $content
         )));
     }
+    public static function shellColor($str, $color='') {
+        switch(strtolower($color)) {
+            case 'red': {
+
+                break;
+            }
+            case 'green': {
+
+                break;
+            }
+            case 'blue': {
+
+                break;
+            }
+            default:
+                return $str;
+        }
+    }
+
+    public static function shellEcho($str) {
+        echo date('[Y-m-d H:i:s] ') . $str . "\n";
+    }
+
 }

@@ -16,7 +16,7 @@ class ErrorController extends Yaf_Controller_Abstract {
 
 	public function errorAction($exception) {
 		if ($this->getRequest()->isXmlHttpRequest()) {
-			AJAX::error($exception->getMessage());
+			Fn::ajax_error($exception->getMessage());
 		}
 		//functionClass::dump(Yaf_Application::$modules);
 		switch($exception->getCode()) {
@@ -33,6 +33,7 @@ class ErrorController extends Yaf_Controller_Abstract {
 			default:
 			{
 				//404
+                //header("HTTP/1.1 503 Server Error.");
 				header("HTTP/1.1 404 Not Found");
 				break;
 			}

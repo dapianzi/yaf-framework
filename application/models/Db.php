@@ -9,7 +9,7 @@
 class DbModel extends DbClass
 {
 
-    public function __construct($confName) {
+    public function __construct($confName = 'mysql') {
 
         $conf = Yaf_Application::app()->getConfig()->$confName;
         parent::__construct($conf->dsn, $conf->username, $conf->password);

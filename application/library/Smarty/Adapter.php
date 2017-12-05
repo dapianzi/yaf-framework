@@ -5,16 +5,14 @@
  * @Since: 2017-11-23 11:45
  * Created by PhpStorm.
  */
-Yaf_Loader::import( "Smarty/Smarty.class.php");
-
-class Smarty_Adapter implements Yaf_View_Interface
+Yaf_Loader::import( "Smarty/Smarty.class.php");   /*基类目录为library*/
+class Smarty_Adapter implements Yaf_View_Interface   /*Smarty_Adapter类为yaf与smarty之间的适配器*/
 {
     /**
      * Smarty object
      * @var Smarty
      */
     public $_smarty;
-
     /**
      * Constructor
      *
@@ -24,16 +22,13 @@ class Smarty_Adapter implements Yaf_View_Interface
      */
     public function __construct($tmplPath = null, $extraParams = array()) {
         $this->_smarty = new Smarty;
-
         if (null !== $tmplPath) {
             $this->setScriptPath($tmplPath);
         }
-        // var_dump($extraParams);
         foreach ($extraParams as $key => $value) {
             $this->_smarty->$key = $value;
         }
     }
-
     /**
      * Return the template engine object
      *
@@ -42,7 +37,6 @@ class Smarty_Adapter implements Yaf_View_Interface
     public function getEngine() {
         return $this->_smarty;
     }
-
     /**
      * Set the path to the templates
      *
@@ -55,7 +49,6 @@ class Smarty_Adapter implements Yaf_View_Interface
             $this->_smarty->template_dir = $path;
             return;
         }
-
         throw new Exception('Invalid path provided');
     }
     /**
@@ -67,7 +60,6 @@ class Smarty_Adapter implements Yaf_View_Interface
     {
         return $this->_smarty->template_dir;
     }
-
     /**
      * Alias for setScriptPath
      *
@@ -79,7 +71,6 @@ class Smarty_Adapter implements Yaf_View_Interface
     {
         return $this->setScriptPath($path);
     }
-
     /**
      * Alias for setScriptPath
      *
@@ -91,7 +82,6 @@ class Smarty_Adapter implements Yaf_View_Interface
     {
         return $this->setScriptPath($path);
     }
-
     /**
      * Assign a variable to the template
      *
@@ -103,7 +93,6 @@ class Smarty_Adapter implements Yaf_View_Interface
     {
         $this->_smarty->assign($key, $val);
     }
-
     /**
      * Allows testing with empty() and isset() to work
      *
@@ -145,7 +134,6 @@ class Smarty_Adapter implements Yaf_View_Interface
         }
         $this->_smarty->assign($spec, $value);
     }
-
     /**
      * Clear all assigned variables
      *
@@ -158,7 +146,6 @@ class Smarty_Adapter implements Yaf_View_Interface
     public function clearVars() {
         $this->_smarty->clear_all_assign();
     }
-
     /**
      * Processes a template and returns the output.
      *
@@ -168,9 +155,7 @@ class Smarty_Adapter implements Yaf_View_Interface
     public function render($name, $value = NULL) {
         return $this->_smarty->fetch($name);
     }
-
     public function display($name, $value = NULL) {
         echo $this->_smarty->fetch($name);
     }
-
 }
