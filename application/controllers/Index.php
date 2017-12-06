@@ -1,7 +1,7 @@
 <?php
 /**
  * @name IndexController
- * @author KF
+ * @author Carl
  * @desc 默认控制器
  * @see http://www.php.net/manual/en/class.yaf-controller-abstract.php
  */
@@ -13,10 +13,25 @@ class IndexController extends BaseController {
      * 对于如下的例子, 当访问http://yourhost/sample/index/index/index/name/KF 的时候, 你就会发现不同
      */
 	public function indexAction() {
-
-
-
-        return TRUE;
+		$proModel = new GanttProjectModel();
+		$myProjects = $proModel->getUserProjectSummary($this->gantt_user['username']);
+		$this->getView()->assign('title', '我的项目列表');
+		$this->getView()->assign('projects', $myProjects);
 	}
+
+
+	public function addProjectAction() {
+
+	}
+
+	public function editProjectAction() {
+
+	}
+
+	public function delProjectAction() {
+
+	}
+
+
 
 }

@@ -3,19 +3,19 @@
 /**
  *
  * @Author: Carl
- * @Since: 2017/5/8 15:21
+ * @Since: 2017/12/8 15:21
  * Created by PhpStorm.
  */
-class GanttController extends BaseController {
+class TaskController extends BaseController {
 
-    public function indexAction() {
-        $data = (new GanttProjectModel())->getAllProjects();
-        $this->getView()->assign("projects", $data);
+    public function indexAction($id=0) {
+        $data = (new GanttTaskModel())->getAlltasks();
+        $this->getView()->assign("tasks", $data);
     }
 
-    public function projectAction($id=0) {
+    public function taskAction($id=0) {
         $last = date('Y-m-d', strtotime('-1 day'));
-        $res = (new GanttProjectModel())->getProjects($id);
+        $res = (new GantttaskModel())->gettasks($id);
         $data = array();
         foreach ($res as $v) {
             if ($v['pid'] > 0) {
@@ -54,7 +54,7 @@ class GanttController extends BaseController {
         $this->getView()->assign("id", $id);
         $this->getView()->assign("today", $last);
         $this->getView()->assign("tasks", $data);
-        $this->getView()->assign('title', (new GanttProjectModel())->getColumn('SELECT name FROM projects WHERE id=?', 0, array($id)));
+        $this->getView()->assign('title', (new GantttaskModel())->getColumn('SELECT name FROM tasks WHERE id=?', 0, array($id)));
     }
 
     public function chartsAction($id=0) {
@@ -66,7 +66,7 @@ class GanttController extends BaseController {
         }
         $last = date('Y-m-d', strtotime('-1 day'));
         $today = date('Y-m-d');
-        $res = (new GanttProjectModel())->getProjects($id);
+        $res = (new GantttaskModel())->gettasks($id);
         $tasks = array(
             'start' => date('Y-m-d',strtotime('-1 week')),
             'end'   => date('Y-m-d',strtotime('+1 week')),
@@ -125,7 +125,7 @@ class GanttController extends BaseController {
         }
         $this->getView()->assign("id", $id);
         $this->getView()->assign("html", $html);
-        $this->getView()->assign('title', (new GanttProjectModel())->getColumn('SELECT name FROM projects WHERE id=?', 0, array($id)));
+        $this->getView()->assign('title', (new GantttaskModel())->getColumn('SELECT name FROM tasks WHERE id=?', 0, array($id)));
     }
 
     private function render_task_gantt($t, $d, $s, $e, $pre='') {
@@ -183,7 +183,7 @@ class GanttController extends BaseController {
         return strtotime($e.'+1 day')-strtotime($s);
     }
 
-    public function AddProjectAction() {
+    public function AddtaskAction() {
         $pid = $_POST['pid'];
         $pro_id = $_POST['pro_id'];
         $name = $_POST['name'];
@@ -194,7 +194,7 @@ class GanttController extends BaseController {
         $end = $_POST['end'];
         $order = $_POST['order'];
 
-        $info = (new GanttProjectModel())->insert('gantt_project', array(
+        $info = (new GantttaskModel())->insert('gantt_task', array(
             'pid'       => $pid,
             'pro_id'    => $pro_id,
             'name'      => $name,
@@ -209,14 +209,14 @@ class GanttController extends BaseController {
         return FALSE;
     }
 
-    public function ModifyProjectAction() {
+    public function ModifytaskAction() {
         $id = $_POST['id'];
-        $info = (new GanttProjectModel())->getRow('SELECT * FROM gantt_project WHERE id=?', array($id));
+        $info = (new GantttaskModel())->getRow('SELECT * FROM gantt_task WHERE id=?', array($id));
         Fn::ajax_success($info);
         return FALSE;
     }
 
-    public function UpdateProjectAction() {
+    public function UpdatetaskAction() {
         $id = $_POST['id'];
         $name = $_POST['name'];
         $desc = $_POST['desc'];
@@ -225,7 +225,7 @@ class GanttController extends BaseController {
         $begin = $_POST['begin'];
         $end = $_POST['end'];
         $order = $_POST['order'];
-        $info = (new GanttProjectModel())->update('gantt_project', array(
+        $info = (new GantttaskModel())->update('gantt_task', array(
             'name'      => $name,
             'desc'      => $desc,
             'ownner'    => $owner,
@@ -238,9 +238,9 @@ class GanttController extends BaseController {
         return FALSE;
     }
 
-    public function DeleteProjectAction() {
+    public function DeletetaskAction() {
         $id = $_POST['id'];
-        $info = (new GanttProjectModel())->delete('gantt_project', array('id'=> $id));
+        $info = (new GantttaskModel())->delete('gantt_task', array('id'=> $id));
         Fn::ajax_success($info);
         return FALSE;
     }

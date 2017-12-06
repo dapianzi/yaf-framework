@@ -34,6 +34,8 @@ class BaseController extends Yaf_Controller_Abstract
             $_SESSION['pref_csrf_token'] = $_SESSION['csrf_token'];
         }
         $_SESSION['csrf_token'] = $this->csrf_token;
+        $this->getView()->assign('csrf_token', $this->csrf_token);
+        $this->getView()->assign('csrf_input', $this->_csrf());
 
         // init user
         if ($this->auth) {
@@ -54,8 +56,9 @@ class BaseController extends Yaf_Controller_Abstract
         $csrf_token = $this->getRequest()->getPost('csrf_token');
         if (isset($_SESSION['pref_csrf_token']) && $csrf_token === $_SESSION['pref_csrf_token']) {
             return TRUE;
+        } else {
+            throw new GanttException('Invalid request.');
         }
-        throw new GanttException('Invalid request.');
     }
 
 }
