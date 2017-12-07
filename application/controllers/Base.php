@@ -11,6 +11,7 @@ class BaseController extends Yaf_Controller_Abstract
     protected $base_uri;
     protected $gantt_user;
     protected $csrf_token;
+    protected $is_ajax;
     protected $auth = TRUE;
 
     public function init() {
@@ -28,14 +29,19 @@ class BaseController extends Yaf_Controller_Abstract
             session_start();
         }
 
-        // init csrf;
-        $this->csrf_token = md5(uniqid() . strval(time())) . time();
-        if (isset($_SESSION['csrf_token'])) {
-            $_SESSION['pref_csrf_token'] = $_SESSION['csrf_token'];
+        // init request mode
+        $this->is_ajax = $this->isAjax();
+
+        // init csrf ,not ajax
+        if (!$this->is_ajax) {
+            $this->csrf_token = substr(md5(uniqid() . strval(time())), 0, 16);
+            if (isset($_SESSION['csrf_token'])) {
+                $_SESSION['pref_csrf_token'] = $_SESSION['csrf_token'];
+            }
+            $_SESSION['csrf_token'] = $this->csrf_token;
+            $this->getView()->assign('csrf_token', $this->csrf_token);
+            $this->getView()->assign('csrf_input', $this->_csrf());
         }
-        $_SESSION['csrf_token'] = $this->csrf_token;
-        $this->getView()->assign('csrf_token', $this->csrf_token);
-        $this->getView()->assign('csrf_input', $this->_csrf());
 
         // init user
         if ($this->auth) {
@@ -43,8 +49,10 @@ class BaseController extends Yaf_Controller_Abstract
                 $this->gantt_user  = (new UserModel())->getUserInfo($_SESSION['gantt_user']);
             }
             if (empty($this->gantt_user)) {
-                echo 'Invalid user';
-                $this->redirect($this->base_uri . '/login?request=' . $_SERVER['REQUEST_URI']);exit;
+                if ($this->is_ajax) {
+                    Fn::ajaxError('Invalid User. Please login first.');
+                }
+                $this->redirect($this->base_uri . '/login');exit;
             }
         }
     }
@@ -61,5 +69,33 @@ class BaseController extends Yaf_Controller_Abstract
             throw new GanttException('Invalid request.');
         }
     }
+
+    protected function getParam($key, $default='') {
+        $s = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
+        return htmlspecialchars($s, ENT_QUOTES);
+    }
+
+    protected function getQuery($key, $default='') {
+        $s = isset($_GET[$key]) ? $_GET[$key] : $default;
+        return htmlspecialchars($s, ENT_QUOTES);
+    }
+
+    protected function getPost($key, $default='') {
+        $s = isset($_POST[$key]) ? $_POST[$key] : $default;
+        return htmlspecialchars($s, ENT_QUOTES);
+    }
+
+    protected function isAjax() {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if('xmlhttprequest' == strtolower($_SERVER['HTTP_X_REQUESTED_WITH']))
+                return TRUE;
+        }
+        // todo: my ajax var
+        if (!empty($this->getParam['MY_AJAX_VAR'])) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
 
 }
