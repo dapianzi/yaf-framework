@@ -15,10 +15,10 @@ class GanttProjectModel extends DbModel {
     }
 
     function getUserProjectSummary($user, $filter=array()) {
-        $sql = "SELECT p.id,p.adate,p.name,p.summary,p.is_public,p.status,";
+        $sql = "SELECT p.id,p.adate,p.date_from,p.name,p.summary,p.is_public,p.status,";
         $sql.= "MIN(t.task_start)start,MAX(t.task_end)end,SUM(sub_task_count)sub_count,SUM(task_count)task_count ";
         $sql.= "FROM project p LEFT JOIN tasks t ON p.id=t.pro_id ";
-        $sql.= "WHERE ownner=? ";
+        $sql.= "WHERE ownner=? GROUP BY p.id ";
         $params = array($user);
         if (!empty($filter)) {
             if (isset($filter['status'])) {

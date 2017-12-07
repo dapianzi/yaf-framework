@@ -1,35 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Project progress</title>
-    <style type="text/css" rel="stylesheet">
-        body{margin:0;padding:0}
-        .project{max-width:10.8rem;margin:0.15rem; clear:both; font-size:0.2rem;}
-        .project-name{width:30%; float: left; height:0.4rem; line-height:0.4rem;}
-        .progress-bar-bg{width:70%; float:left; height:0.1rem; box-sizing: border-box; margin:0.15rem 0rem; background:orange; border-radius: 0.05rem;}
-        .progress-bar{width:0; height:100%;background: lightgreen; border-radius: 0.05rem;}
-        @media screen and (max-device-width: 720px) {
-            .progress-bar-bg{width:100%; margin-top: 0.05rem;}
-        }
-    </style>
-    <script type="text/javascript" src="<?php echo $BASE_URI; ?>/public/static/js/init-rem.js"></script>
-    <script type="text/javascript" src="<?php echo $BASE_URI; ?>/public/static/js/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(function(){
-           $('.progress-bar').each(function(elem, idx){
-               $(this).css({'width': $(this).data('progress') + '%'});
-           })
-        });
-    </script>
+    <{include file="public/header.html"}>
 </head>
 <body>
-    <?php foreach($progress as $p) { ?>
-    <div class="project">
-        <div class="project-name"><?php echo $p['name']; ?></div>
-        <div class="progress-bar-bg"><div class="progress-bar" data-progress="<?php echo $p['progress']; ?>"></div></div>
+<{include file="public/head.html"}>
+<div class="main container">
+    <h2 class="page-header">我的项目计划</h2>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th><label><input type="checkbox" id="checkAll" /> 全选</label></th>
+                <th>项目名</th>
+                <th>开始时间</th>
+                <th>子任务数</th>
+                <th>完成进度</th>
+                <th>是否公开</th>
+            </tr>
+        </thead>
+        <tbody>
+            <{foreach from=$projects key=key item=item}>
+            <tr>
+                <td><input type="checkbox" name="chk[]" value="<{$item.id}>" /></td>
+                <td><a href="<{$BASE_URI}>/project/id/<{$item.id}>"><{$item.name}></a></td>
+                <td><{$item.date_from}></td>
+                <td><{$item.task_count}> | <{$item.sub_count}></td>
+                <td><{$item.process}></td>
+                <td><{$item.is_public}></td>
+            </tr>
+            <{/foreach}>
+        </tbody>
+    </table>
+    <div class="btn-groups">
+        <button class="btn btn-primary btn-sm">删除</button>
+        <select class=""><option>删除</option><option>完成</option><option>放弃</option></select>
     </div>
-    <?php } ?>
+</div>
+<{include file="public/foot.html"}>
 </body>
 </html>

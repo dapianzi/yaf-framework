@@ -19,16 +19,17 @@ class LoginController extends BaseController
             $password = $req->getPost('password');
             $userInfo = (new UserModel())->getUserInfo($username);
             if ($userInfo && $userInfo['password'] === sha1($password)) {
+                $_SESSION['gantt_user'] = $username;
                 $ref = $req->getPost('ref');
                 $ref = empty($ref) ? $this->base_uri : urldecode($ref);
                 $this->redirect($ref);exit;
             } else {
                 $err = 'Username or password is incorrect.';
+                $this->getView()->assign('err', $err);
             }
         }
         $this->getView()->assign('title', '账号登录');
         $this->getView()->assign('ref', urlencode($req->getQuery('request', '')));
-        $this->getView()->assign('csrf', $this->_csrf());
     }
 
 

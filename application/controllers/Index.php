@@ -15,10 +15,17 @@ class IndexController extends BaseController {
 	public function indexAction() {
 		$proModel = new GanttProjectModel();
 		$myProjects = $proModel->getUserProjectSummary($this->gantt_user['username']);
+		foreach ($myProjects as &$p) {
+		    $p['process'] = $this->projectProcess($p['status'], $p['start'], $p['end']);
+        }
 		$this->getView()->assign('title', '我的项目列表');
 		$this->getView()->assign('projects', $myProjects);
 	}
 
+
+	public function infoAction($id) {
+
+    }
 
 	public function addProjectAction() {
 
@@ -32,6 +39,24 @@ class IndexController extends BaseController {
 
 	}
 
-
+	private function projectProcess($status, $start, $end) {
+        if ($status == -1) {
+            return '<span class="label label-warning">已放弃</span>';
+        } else if ($status == 1) {
+            return '<span class="label label-success">已完成（100%）</span>';
+        } else {
+            $now = time();
+            $start = strtotime($start);
+            $end = strtotime($end);
+            if ($now >= $end) {
+                $process = 99.99;
+            } else if ($now <= $start) {
+                $process = 0;
+            } else {
+                $process = round(($now-$start)*100/($end-$start), 2);
+            }
+            return '<span class="label label-primary">进行中（'.$process.'%）</span>';
+        }
+    }
 
 }

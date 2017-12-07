@@ -29,7 +29,7 @@ class BaseController extends Yaf_Controller_Abstract
         }
 
         // init csrf;
-        $this->csrf_token = substr(md5(uniqid() . strval(time())), 0, 16);
+        $this->csrf_token = md5(uniqid() . strval(time())) . time();
         if (isset($_SESSION['csrf_token'])) {
             $_SESSION['pref_csrf_token'] = $_SESSION['csrf_token'];
         }
@@ -43,7 +43,8 @@ class BaseController extends Yaf_Controller_Abstract
                 $this->gantt_user  = (new UserModel())->getUserInfo($_SESSION['gantt_user']);
             }
             if (empty($this->gantt_user)) {
-                $this->redirect($this->base_uri . '/login');exit;
+                echo 'Invalid user';
+                $this->redirect($this->base_uri . '/login?request=' . $_SERVER['REQUEST_URI']);exit;
             }
         }
     }
