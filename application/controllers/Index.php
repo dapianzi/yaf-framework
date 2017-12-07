@@ -28,16 +28,79 @@ class IndexController extends BaseController {
     }
 
 	public function addProjectAction() {
+        if ($this->getPost('action') == 'add') {
+            $name = $this->getPost('pro_name');
+            $start = $this->getPost('pro_start');
+            $summary = $this->getPost('pro_summary');
+            $is_public = $this->getPost('is_public', 0);
+            $ownner = $this->gantt_user['username'];
 
+            $res = (new GanttProjectModel())->add(array(
+                'name' => $name,
+                'date_from' => $start,
+                'summary' => $summary,
+                'ownner' => $ownner,
+                'is_public' => $is_public,
+                'status' => 0,
+            ));
+            if ($res) {
+                Fn::ajaxSuccess($res);
+            } else {
+                Fn::ajaxError('insert failed.');
+            }
+        }
+        $this->assign('action', 'add');
 	}
 
 	public function editProjectAction() {
+        $id = $this->getRequest()->getParam('id', 0);
+        $proModel = new GanttProjectModel();
+        if ($this->getPost('action') == 'edit') {
+            $name = $this->getPost('pro_name');
+            $start = $this->getPost('pro_start');
+            $summary = $this->getPost('pro_summary');
+            $is_public = $this->getPost('is_public', 0);
 
+            $res = $proModel->edit($id, array(
+                'name' => $name,
+                'date_from' => $start,
+                'summary' => $summary,
+                'is_public' => $is_public,
+            ));
+            if ($res) {
+                Fn::ajaxSuccess($res);
+            } else {
+                Fn::ajaxError('insert failed.');
+            }
+        }
+        $pro_info = $proModel->getProjectInfo($id);
+        $this->getView()->assign('info', $pro_info);
 	}
 
 	public function delProjectAction() {
-
+        $ids = $this->getPost('ids', 0);
+        $proModel = new GanttProjectModel();
+        $res = $proModel->del($ids);
+        Fn::ajaxSuccess($res);
 	}
+
+	public function togglePublicAction() {
+        $id = $this->getRequest()->getParam('id', 0);
+        $proModel = new GanttProjectModel();
+        $is_public = $this->getPost('is_public');
+
+        $res = $proModel->set($id, 'is_public', $is_public);
+        Fn::ajaxSuccess($res);
+    }
+
+	public function setStatusAction() {
+        $ids = $this->getParam('ids', 0);
+        $proModel = new GanttProjectModel();
+        $status = $this->getPost('status');
+
+        $res = $proModel->set($ids, 'status', $status);
+        Fn::ajaxSuccess($res);
+    }
 
 	private function projectProcess($status, $start, $end) {
         if ($status == -1) {

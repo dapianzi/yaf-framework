@@ -8,6 +8,8 @@
  */
 class GanttProjectModel extends DbModel {
 
+    protected $table = 'project';
+
     function getProjectTask($id) {
         $sql = " SELECT * FROM project WHERE pro_id=? ORDER BY pid ASC,begin_date ASC ";
 
@@ -46,5 +48,4 @@ class GanttProjectModel extends DbModel {
         }
         return $this->getAll($sql, $params);
     }
-
 }

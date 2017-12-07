@@ -72,17 +72,28 @@ class BaseController extends Yaf_Controller_Abstract
 
     protected function getParam($key, $default='') {
         $s = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
-        return htmlspecialchars($s, ENT_QUOTES);
+        return $this->safeInput($s);
     }
 
     protected function getQuery($key, $default='') {
         $s = isset($_GET[$key]) ? $_GET[$key] : $default;
-        return htmlspecialchars($s, ENT_QUOTES);
+        return $this->safeInput($s);
     }
 
     protected function getPost($key, $default='') {
         $s = isset($_POST[$key]) ? $_POST[$key] : $default;
-        return htmlspecialchars($s, ENT_QUOTES);
+        return $this->safeInput($s);
+    }
+
+    protected function safeInput($s) {
+        if (is_array($s)) {
+            foreach ($s as &$v) {
+                $v = htmlspecialchars($v, ENT_QUOTES);
+            }
+        } else {
+            $s = htmlspecialchars($s, ENT_QUOTES);
+        }
+        return $s;
     }
 
     protected function isAjax() {

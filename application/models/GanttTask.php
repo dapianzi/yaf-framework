@@ -8,6 +8,8 @@
  */
 class GanttTaskModel extends DbModel {
 
+    protected $table = 'task';
+
     public function getUserJoinTasks($user_id, $end_time='') {
         $sql = "SELECT t.id,t.title,t.date_start,t.date_end,p.name FROM task_user tu ";
         $sql.= "LEFT JOIN task t ON tu.task_id=t.id ";
