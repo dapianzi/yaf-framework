@@ -28,27 +28,24 @@ class LoginController extends BaseController
         }
         $this->getView()->assign('title', '账号登录');
         $this->getView()->assign('ref', urlencode($req->getQuery('request', '')));
-        $this->getView()->assign('csrf', $this->_csrf());
     }
 
 
     public function signAction(){
-        $req = $this->getRequest();
 
-        if ($req->getPost('action') === 'sign') {
+        if ($this->getPost('action') === 'sign') {
             $this->_valid_csrf();
 
             $userModel = new UserModel();
-            $username = $req->getPost('username', '');
-            $password = $req->getPost('password', '');
-            $email = $req->getPost('email', '');
-            $nickname = $req->getPost('nickname', '');
+            $username = $this->getPost('username', '');
+            $password = $this->getPost('password', '');
+            $email = $this->getPost('email', '');
+            $nickname = $this->getPost('nickname', '');
             // valid
             if ($userModel->getUserInfo($username)) {
                 Fn::ajaxError('Username: '. $username .' is already existed.');
             }
             // todo: validate email, password
-
 
             $data = array(
                 'username' => $username,
@@ -56,11 +53,14 @@ class LoginController extends BaseController
                 'email' => $email,
                 'nickname' => $nickname,
             );
-            $userid = $userModel->insert($userModel->table, $data);
-            Fn::ajaxSuccess($userid);
+            $res = $userModel->insert($userModel->table, $data);
+            if ($res) {
+                Fn::ajaxSuccess($this->base_uri . '/login');
+            } else {
+                Fn::ajaxError('未知错误：' . $userModel->getError());
+            }
         }
         $this->getView()->assign('title', '账号注册');
-        $this->getView()->assign('csrf', $this->_csrf());
     }
 
 }

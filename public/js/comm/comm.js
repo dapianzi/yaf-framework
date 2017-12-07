@@ -6,13 +6,25 @@ js_comm = {
     ajax_lock: false,
 
     ini: function() {
-        if (typeof __PAGE__ !== 'undefined') {
-            $('.side-bar .nav>li').each(function(){
-                if ($(this).find('a').attr('href') == __PAGE__) {
-                    $(this).addClass('active');
-                }
-            })
+        // init alert modal
+        if (!$('#Gantt-Alert-Modal').length() > 0) {
+            //$('body').append('<div id="Gantt-Alert-Modal" class="modal"></div>');
         }
+    },
+    alert: function(content, alert_cls, _callbk) {
+        alert_cls = alert_cls || 'danger';
+        var _content = '<div class=""></div>';
+            _content+= '<div class="">' + content + '</div>';
+            _content+= '<div class=""></div>';
+        //$('#Gantt-Alert-Modal').html(_content).on('hidden.bs.modal', _callbk).modal('show');
+        alert(content);
+        _callbk();
+    },
+    alert_success: function(content, _callbk) {
+        js_comm.alert(content, 'success', _callbk);
+    },
+    alert_error: function(content, _callbk) {
+        js_comm.alert(content, 'danger', _callbk);
     },
     ajax: function(_url, _data, _ok, _fail) {
         if (js_comm.ajax_lock) {
@@ -28,12 +40,15 @@ js_comm = {
                 if (res.status === 0) {
                     _ok(res);
                 } else {
-                    _fail(res);
+                    if (_fail) {
+                        _fail(res);
+                    } else {
+                        js_comm.alert_error(res.content);
+                    }
                 }
             },
             error: function(xhr, status, err) {
-                alert('系统出错了：' + err);
-                console.log(xhr, status);
+                js_comm.alert_error('系统出错了：' + err);
             },
             complete: function() {
                 js_comm.ajax_lock = false;
@@ -50,10 +65,12 @@ js_comm = {
                 _ok(res);
             },
             error: function(xhr, status, err) {
-                alert('系统出错了：' + err);
-                console.log(xhr, status);
+                js_comm.alert_error('系统出错了：' + err);
             }
         })
+    },
+    ajax_form: function(_form, _ok, _fail) {
+        js_comm.ajax($(_form).attr('action'), $(_form).serialize(), _ok, _fail);
     }
 };
 $(function(){js_comm.ini();});
