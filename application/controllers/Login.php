@@ -42,7 +42,7 @@ class LoginController extends BaseController
             $username = $this->getPost('username', '');
             $password = $this->getPost('password', '');
             $email = $this->getPost('email', '');
-            $nickname = $this->getPost('nickname', '');
+            $nickname = $this->getPost('nickname', $username);
             // valid
             if ($userModel->getUserInfo($username)) {
                 Fn::ajaxError('Username: '. $username .' is already existed.');
@@ -55,7 +55,7 @@ class LoginController extends BaseController
                 'email' => $email,
                 'nickname' => $nickname,
             );
-            $res = $userModel->insert($userModel->table, $data);
+            $res = $userModel->add($data);
             if ($res) {
                 Fn::ajaxSuccess($this->base_uri . '/login');
             } else {

@@ -10,7 +10,7 @@ class BaseController extends Yaf_Controller_Abstract
 {
     protected $base_uri;
     protected $gantt_user;
-    protected $csrf_token;
+    protected $csrf_token = '';
     protected $is_ajax;
     protected $auth = TRUE;
 
@@ -32,16 +32,13 @@ class BaseController extends Yaf_Controller_Abstract
         // init request mode
         $this->is_ajax = $this->isAjax();
 
-        // init csrf ,not ajax
-        if (!$this->is_ajax) {
-            $this->csrf_token = substr(md5(uniqid() . strval(time())), 0, 16);
-            if (isset($_SESSION['csrf_token'])) {
-                $_SESSION['pref_csrf_token'] = $_SESSION['csrf_token'];
-            }
-            $_SESSION['csrf_token'] = $this->csrf_token;
-            $this->getView()->assign('csrf_token', $this->csrf_token);
-            $this->getView()->assign('csrf_input', $this->_csrf());
+        // init csrf
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = substr(md5(uniqid() . strval(time())), 0, 32).substr(md5(uniqid() . strval(time())), 0, 32);;
         }
+        $this->csrf_token = $_SESSION['csrf_token'];
+        $this->getView()->assign('csrf_token', $this->csrf_token);
+        $this->getView()->assign('csrf_input', $this->_csrf());
 
         // init user
         if ($this->auth) {
@@ -55,6 +52,7 @@ class BaseController extends Yaf_Controller_Abstract
                 $this->redirect($this->base_uri . '/login');exit;
             }
         }
+        $this->getView()->assign('gantt_user', $this->gantt_user);
     }
 
     protected function _csrf() {
@@ -63,7 +61,7 @@ class BaseController extends Yaf_Controller_Abstract
 
     protected function _valid_csrf() {
         $csrf_token = $this->getRequest()->getPost('csrf_token');
-        if (isset($_SESSION['pref_csrf_token']) && $csrf_token === $_SESSION['pref_csrf_token']) {
+        if (isset($_SESSION['csrf_token']) && $csrf_token === $_SESSION['csrf_token']) {
             return TRUE;
         } else {
             throw new GanttException('Invalid request.');

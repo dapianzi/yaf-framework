@@ -4,12 +4,23 @@
 ;
 js_comm = {
     ajax_lock: false,
+    obj_modal: null,
 
     ini: function() {
         // init alert modal
-        if (!$('#Gantt-Alert-Modal').length() > 0) {
+        if (!$('#Gantt-Alert-Modal').length > 0) {
             //$('body').append('<div id="Gantt-Alert-Modal" class="modal"></div>');
         }
+        $('.checkAll').on('click', function(){
+            $('input[name="'+$(this).data('target')+'"]').prop('checked', $(this).prop('checked'));
+        });
+        // init common modal
+        js_comm.obj_modal = $('#commonModal');
+        // datepicker
+        $('.datepicker').datepicker({
+            daysOfWeekHighlighted: "0,6",
+            language: "zh-CN",
+        });
     },
     alert: function(content, alert_cls, _callbk) {
         alert_cls = alert_cls || 'danger';
@@ -59,7 +70,7 @@ js_comm = {
         $.ajax({
             url: _url,
             type: 'GET',
-            dataType: 'html',
+            dataType: 'text',
             timeOut: 15000,
             success: function(res) {
                 _ok(res);
@@ -71,6 +82,21 @@ js_comm = {
     },
     ajax_form: function(_form, _ok, _fail) {
         js_comm.ajax($(_form).attr('action'), $(_form).serialize(), _ok, _fail);
+    },
+    load_modal: function(_url, _cb) {
+        js_comm.ajax_get(_url, function(res){
+            js_comm.obj_modal.html(res).modal('show');
+            if (_cb) {
+                _cb();
+            }
+        });
+    },
+    modal: function(content, _cb) {
+        js_comm.obj_modal.html(content);
+        js_comm.obj_modal.modal('show');
+        if (_cb) {
+            _cb();
+        }
     }
 };
 $(function(){js_comm.ini();});

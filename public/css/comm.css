@@ -18,3 +18,7 @@
 .ajax-status-toggle {
     cursor: pointer;
 }
+.progress-bar-abandon{
+    background-color:#9B410E;
+    width: 100%;
+}

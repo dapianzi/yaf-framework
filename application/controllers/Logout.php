@@ -8,8 +8,10 @@
 
 class LogoutController extends BaseController
 {
-    public function index() {
-        unset($_SESSION['gantt_user']);
+    public function indexAction() {
+        unset($_SESSION);
+        session_destroy();
         $this->redirect($this->base_uri . '/login');
+        return false;
     }
 }

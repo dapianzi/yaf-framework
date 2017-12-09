@@ -16,26 +16,25 @@ class IndexController extends BaseController {
 		$proModel = new GanttProjectModel();
 		$myProjects = $proModel->getUserProjectSummary($this->gantt_user['username']);
 		foreach ($myProjects as &$p) {
-		    $p['process'] = $this->projectProcess($p['status'], $p['start'], $p['end']);
+		    $p['progress'] = $this->projectProgress($p);
         }
 		$this->getView()->assign('title', '我的项目列表');
 		$this->getView()->assign('projects', $myProjects);
 	}
 
-
-	public function infoAction($id) {
-
-    }
-
-	public function addProjectAction() {
+	public function addprojectAction() {
         if ($this->getPost('action') == 'add') {
             $name = $this->getPost('pro_name');
-            $start = $this->getPost('pro_start');
+            $start = $this->getPost('from_date');
             $summary = $this->getPost('pro_summary');
             $is_public = $this->getPost('is_public', 0);
             $ownner = $this->gantt_user['username'];
-
-            $res = (new GanttProjectModel())->add(array(
+            if (empty($start)) {
+                $start = date('Y-m-d');
+            }
+            $this->_valid_csrf();
+            $proModel = new GanttProjectModel();
+            $res = $proModel->add(array(
                 'name' => $name,
                 'date_from' => $start,
                 'summary' => $summary,
@@ -44,20 +43,20 @@ class IndexController extends BaseController {
                 'status' => 0,
             ));
             if ($res) {
-                Fn::ajaxSuccess($res);
+                Fn::ajaxSuccess($this->base_uri.'/task/index/id/'.$proModel->getLastInsertId());
             } else {
                 Fn::ajaxError('insert failed.');
             }
         }
-        $this->assign('action', 'add');
+        $this->getView()->assign('action', 'add');
 	}
 
-	public function editProjectAction() {
-        $id = $this->getRequest()->getParam('id', 0);
+	public function editprojectAction() {
+	    $id = $this->getParam('id', 0);
         $proModel = new GanttProjectModel();
         if ($this->getPost('action') == 'edit') {
             $name = $this->getPost('pro_name');
-            $start = $this->getPost('pro_start');
+            $start = $this->getPost('from_date');
             $summary = $this->getPost('pro_summary');
             $is_public = $this->getPost('is_public', 0);
 
@@ -73,15 +72,29 @@ class IndexController extends BaseController {
                 Fn::ajaxError('insert failed.');
             }
         }
-        $pro_info = $proModel->getProjectInfo($id);
-        $this->getView()->assign('info', $pro_info);
+        $pro_info = $proModel->get($id);
+        $this->getView()->assign('pro', $pro_info);
+        $this->getView()->assign('action', 'edit');
 	}
 
-	public function delProjectAction() {
+	public function modProjectAction() {
         $ids = $this->getPost('ids', 0);
+        $act = $this->getPost('action', '');
         $proModel = new GanttProjectModel();
-        $res = $proModel->del($ids);
-        Fn::ajaxSuccess($res);
+        switch ($act) {
+            case 'del':
+                $res = $proModel->del($ids);
+                break;
+            case 'finish':
+                $res = $proModel->set($ids, 'status', 1);
+                break;
+            case 'abandon':
+                $res = $proModel->set($ids, 'status', -1);
+                break;
+            default:
+
+        }
+        $this->redirect($this->base_uri);exit;
 	}
 
 	public function togglePublicAction() {
@@ -93,32 +106,25 @@ class IndexController extends BaseController {
         Fn::ajaxSuccess($res);
     }
 
-	public function setStatusAction() {
-        $ids = $this->getParam('ids', 0);
-        $proModel = new GanttProjectModel();
-        $status = $this->getPost('status');
-
-        $res = $proModel->set($ids, 'status', $status);
-        Fn::ajaxSuccess($res);
-    }
-
-	private function projectProcess($status, $start, $end) {
-        if ($status == -1) {
-            return '<span class="label label-warning">已放弃</span>';
-        } else if ($status == 1) {
-            return '<span class="label label-success">已完成（100%）</span>';
+	private function projectProgress($pro) {
+        if ($pro['status'] == -1) {
+            return -1;
+        } elseif ($pro['status'] == 1) {
+            return 100;
+        } elseif ($pro['task_count'] == 0) {
+            return 0;
         } else {
             $now = time();
-            $start = strtotime($start);
-            $end = strtotime($end);
+            $start = strtotime($pro['start']);
+            $end = strtotime($pro['end']);
             if ($now >= $end) {
-                $process = 99.99;
+                $progress = 99;
             } else if ($now <= $start) {
-                $process = 0;
+                $progress = 0;
             } else {
-                $process = round(($now-$start)*100/($end-$start), 2);
+                $progress = floor(($now-$start)*100/($end-$start));
             }
-            return '<span class="label label-primary">进行中（'.$process.'%）</span>';
+            return $progress;
         }
     }
 

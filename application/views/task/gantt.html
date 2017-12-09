@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <{include file="public/header.html"}>
 </head>
 <body>
+<{include file="public/head.html"}>
+<div class="main container">
+    <h2 class="page-header">项目详情 | 甘特图</h2>
+    <ol class="breadcrumb">
+        <li><a href="<{$BASE_URI}>">首页</a></li>
+        <li><a href="<{$BASE_URI}>/task/id/<{$project.id}>"><{$project.name}></a></li>
+        <li class="active"><{$project.name}></li>
+    </ol>
+    <div>
 
+    </div>
+</div>
+<{include file="public/foot.html"}>
 </body>
 </html>

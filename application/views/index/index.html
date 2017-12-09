@@ -7,35 +7,92 @@
 <{include file="public/head.html"}>
 <div class="main container">
     <h2 class="page-header">我的项目计划</h2>
+    <ol class="breadcrumb">
+        <li class="active">首页</li>
+    </ol>
+    <form class="form-inline" action="<{$BASE_URI}>/index/modproject" method="post">
+    <{$csrf_input}>
     <table class="table table-hover table-bordered">
         <thead>
             <tr>
-                <th><label><input type="checkbox" id="checkAll" /> 全选</label></th>
+                <th style="width:30px;"><input type="checkbox" class="checkAll" data-target="ids[]"></th>
                 <th>项目名</th>
                 <th>开始时间</th>
-                <th>子任务数</th>
-                <th>完成进度</th>
+                <th>任务拆分</th>
+                <th style="width:240px;">完成进度</th>
                 <th>是否公开</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             <{foreach from=$projects key=key item=item}>
             <tr>
-                <td><input type="checkbox" name="chk[]" value="<{$item.id}>" /></td>
-                <td><a href="<{$BASE_URI}>/project/id/<{$item.id}>"><{$item.name}></a></td>
+                <td><input type="checkbox" name="ids[]" value="<{$item.id}>" /></td>
+                <td><a href="<{$BASE_URI}>/task/index/id/<{$item.id}>"><{$item.name}></a></td>
                 <td><{$item.date_from}></td>
-                <td><{$item.task_count}> | <{$item.sub_count}></td>
-                <td><{$item.process}></td>
-                <td><{$item.is_public}></td>
+                <td><label class="label label-primary"><{$item.task_count}> - <{$item.sub_count}></label></td>
+                <td>
+                    <div class="progress" style="margin-bottom:0;margin-top:5px; height:10px;">
+                        <div class="progress-bar <{if $item.progress == '100'}> progress-bar-success
+                        <{elseif $item.progress == '-1'}> progress-bar-abandon progress-bar-danger
+                        <{elseif $item.progress >= '80'}> progress-bar-primary progress-bar-striped active
+                        <{elseif $item.progress >= '30'}> progress-bar-info progress-bar-striped active
+                        <{else}> progress-bar-warning progress-bar-striped active
+                        <{/if}>" role="progressbar" aria-valuenow="<{$item.progress}>" aria-valuemin="0" aria-valuemax="100" style="width: <{$item.progress}>%">
+                            <span class="sr-only"><{$item.progress}>%</span>
+                        </div>
+                    </div>
+                </td>
+                <{if $item['is_public']==0}>
+                <td><label class="label label-status label-info">私有</label></td>
+                <{else}>
+                <td><label class="label label-status label-warning">公开</label></td>
+                <{/if}>
+                <td>
+                    <a class="btn btn-link btn-xs edit-pro" data-href="<{$BASE_URI}>/index/editproject?id=<{$item.id}>">修改</a>
+                </td>
             </tr>
             <{/foreach}>
         </tbody>
     </table>
-    <div class="btn-groups">
-        <button class="btn btn-primary btn-sm">删除</button>
-        <select class=""><option>删除</option><option>完成</option><option>放弃</option></select>
+    <div class="form-group form-group-sm">
+        <select name="action" class="form-control"><option value="del">删除</option><option value="finish">完成</option><option value="abandon">放弃</option></select>
+        <button class="btn btn-primary btn-sm">确定</button>
+        <button type="button" id="add-pro" class="btn btn-sm btn-success" >新增</button>
     </div>
+    </form>
 </div>
 <{include file="public/foot.html"}>
+<script type="text/javascript">
+    $(function(){
+        $('#add-pro').on('click', function(e){
+            js_comm.load_modal('<{$BASE_URI}>/index/addproject', function(){
+                $('#add-project').on('click', function(){
+                    if ($('#pro_name').val() == '') {
+                        js_comm.alert('项目名称不能为空！');
+                        return false;
+                    }
+                    js_comm.ajax_form('#form-add-project', function(res){
+                        location.href = res.content;
+                    });
+                });
+            });
+        });
+        $('.edit-pro').on('click', function(e){
+            e.preventDefault();
+            js_comm.load_modal($(this).data('href'), function(){
+                $('#edit-project').on('click', function(){
+                    if ($('#pro_name').val() == '') {
+                        js_comm.alert('项目名称不能为空！');
+                        return false;
+                    }
+                    js_comm.ajax_form('#form-edit-project', function(res){
+                        location.reload();
+                    });
+                });
+            });
+        })
+    });
+</script>
 </body>
 </html>
