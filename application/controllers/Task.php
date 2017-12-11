@@ -23,107 +23,85 @@ class TaskController extends BaseController {
             $t['date_end'] = $t['date_end']>$max_end ? $t['date_end'] : $max_end;
             $t['date_count'] = ceil((strtotime($t['date_end']) - strtotime($t['date_start']))/86400);
             $t['progress'] = Fn::dateProgress($t['date_start'], $t['date_end']);
-            $t['status'] = $t['progress'] == 100 ? 'info' : '';
+            $t['status'] = $t['progress'] == 100 ? 'info' : 'warning';
         }
         $this->getView()->assign("title", '任务拆分');
         $this->getView()->assign("tasks", $tasks);
         $this->getView()->assign("project", $project);
     }
 
-    public function chartsAction($id=0) {
+    public function ganttAction()
+    {
+        $pro = $this->getParam('pro', 0);
+        $project = (new GanttProjectModel())->get($pro);
+        $this->getView()->assign('project', $project);
+        $tasks = (new GanttTaskModel())->getAllTasks($pro, date('Y-m-d', time()-180*86400));
+        // Fn::dump($tasks);
+        $date_s = date('Y-m-d', time()-7*86400);
+        $date_e = date('Y-m-d', time()+21*86400);
+        foreach ($tasks as &$task) {
+            $max_end = date('Y-m-d');
+            foreach ($task['sub_task'] as &$sub_task) {
+                $max_end = max($sub_task['date_end'], $max_end);
+            }
+            $task['date_end'] = $task['date_end'] > $max_end ? $task['date_end'] : $max_end;
+            $date_s = $date_s<$task['date_start'] ? $date_s : $task['date_start'];
+            $date_e = $date_e>$task['date_end'] ? $date_e : $task['date_end'];
+        }
 
-        $type = $this->_request->getParam('type', 3);
-        $first = date('Y-m-d', strtotime('-1 week'));
-        if ($type == 2) {
-            $first = date('Y-m-01', $first);
-        }
-        $last = date('Y-m-d', strtotime('-1 day'));
-        $today = date('Y-m-d');
-        $res = (new GantttaskModel())->gettasks($id);
-        $tasks = array(
-            'start' => date('Y-m-d',strtotime('-1 week')),
-            'end'   => date('Y-m-d',strtotime('+1 week')),
-            'data'  => array()
+        $gantt_data = array(
+            'date' => array(),
+            'tasks' => array(),
+            'pre' => array(),
+            'done' => array(),
+            'today' => array(),
+            'todo' => array(),
+            'after' => array(),
         );
-        if ($type == 3) {
-            $tasks['start'] = date('Y-m-d', strtotime('-2 weeks +1 day'));
-        }
-        $data = array();
-        foreach ($res as $v) {
-            if ($v['pid'] > 0) {
-                $total = strtotime($v['end_date'])-strtotime($v['begin_date']);
-                $v['limit'] = $total/86400;
-                $data[$v['pid']]['tasks'][] = $v;
-            } else {
-                $data[$v['id']] = $v;
+        $today = date('Y-m-d');
+        foreach ($tasks as $t) {
+            array_unshift($gantt_data['tasks'], $t['title']);
+            $task_time = $this->_task_time($date_s, $date_e, $t['date_start'], $t['date_end'], $today);
+            array_unshift($gantt_data['pre'], $task_time[0]);
+            array_unshift($gantt_data['done'], $task_time[1]);
+            array_unshift($gantt_data['today'], $task_time[2]);
+            array_unshift($gantt_data['todo'], $task_time[3]);
+            array_unshift($gantt_data['after'], $task_time[4]);
+            foreach ($t['sub_task'] as $tt) {
+                array_unshift($gantt_data['tasks'], '----'.$tt['title']);
+                $task_time = $this->_task_time($date_s, $date_e, $tt['date_start'], $tt['date_end'], $today);
+                array_unshift($gantt_data['pre'], $task_time[0]);
+                array_unshift($gantt_data['done'], $task_time[1]);
+                array_unshift($gantt_data['today'], $task_time[2]);
+                array_unshift($gantt_data['todo'], $task_time[3]);
+                array_unshift($gantt_data['after'], $task_time[4]);
             }
         }
-        foreach ($data as $k=>&$v) {
-            if (isset($v['tasks'])) {
-                $total = 0;
-                $finish = 0;
-                foreach ($v['tasks'] as $task) {
-                    $v['end_date'] = max($v['end_date'], $task['end_date']);
-                }
-            }
-            $v['limit'] = (strtotime($v['end_date'].' +1 day')-strtotime($v['begin_date']))/86400;
-            if (strtotime($v['begin_date']) > strtotime($last.'+1 week') || strtotime($v['end_date']) < strtotime($first) ) {
-                unset($data[$k]);continue;
-            }
-            if ($type!=3) {
-                $tasks['start'] = min($tasks['start'], $v['begin_date']);
-            }
-            $tasks['end'] = max($v['end_date'], $tasks['end']);
-        }
-        $html = '';
-        $html.= '<tr><td class="name">name</td>';
-        $offset = 0;
-        for ($i=$tasks['start']; $i<=$tasks['end']; $i=date('Y-m-d', strtotime($i.'+1 day'))) {
-            $weekend = $i==$today ? 'today' : ($this->is_holiday($i) ? 'weekend' : '');
-            $html.= '<td class="'. $weekend .'">'. date('m-d', strtotime($i)) .'</td>';
-            $offset++;
-        }
-        $html.= '</tr>';
-        //Fn::dump($data);
-        foreach($data as $t) {
-            $html.= $this->render_task_gantt($t, $today, $tasks['start'], $tasks['end']);
-            if (isset($t['tasks'])) {
-                foreach($t['tasks'] as $tt) {
-                    if ($tt['begin_date'] > $tasks['end'] || $tt['end_date'] < $tasks['start']) {
-                        continue;
-                    }
-                    $html.= $this->render_task_gantt($tt, $today, $tasks['start'], $tasks['end'], '----');
-                }
-            }
-        }
-        $this->getView()->assign("id", $id);
-        $this->getView()->assign("html", $html);
-        $this->getView()->assign('title', (new GantttaskModel())->getColumn('SELECT name FROM tasks WHERE id=?', 0, array($id)));
+        $this->getView()->assign('chart_height', count($gantt_data['tasks'])*36+60);
+        $this->getView()->assign('date_s', strtotime($date_s)*1000);
+        $this->getView()->assign('today', (strtotime($today) - strtotime($date_s))/86400);
+        $this->getView()->assign('gantt_data', json_encode($gantt_data));
     }
 
-    private function render_task_gantt($t, $d, $s, $e, $pre='') {
-        $html = "<tr><td class='name'>{$pre}{$t['name']}</td>";
-        for ($i=$s; $i<=$e; $i=date('Y-m-d', strtotime($i.'+1 day'))) {
-            $weekend = $i==$d ? 'today' : ($this->is_holiday($i) ? 'weekend' : '');
-
-            if ($t['begin_date'] <= $i && $t['end_date'] >= $i && !$this->is_holiday($i)) {
-                if ($pre == '') {
-                    $weekend.= ' parent';
-                }
-                $cls = $i >= $d ? 'undo' : 'done';
-                if ($t['begin_date'] == $i) {
-                    $cls.= ' first';
-                }
-                if ($t['end_date'] == $i) {
-                    $cls.= ' last';
-                }
-                $html.= '<td class="'. $weekend . '">'. '<span class="' . $cls .' gantt-bar"></span>' .'</td>';
-            } else {
-                $html.= '<td class="'. $weekend .'"></td>';
-            }
+    private function _task_time($s, $e, $ts, $te, $t) {
+        $pre=$done=$today=$todo=$after = 0;
+        if ($ts > $t) {
+            $pre = (strtotime($ts) - strtotime($s))/86400 + 1;
+            $todo = (strtotime($te) - strtotime($ts))/86400;
+            $after = (strtotime($e) - strtotime($te))/86400;
+        } else if ($te < $t) {
+            $pre = (strtotime($ts) - strtotime($s))/86400;
+            $done = (strtotime($te) - strtotime($ts))/86400;
+            $after = (strtotime($e) - strtotime($te))/86400 + 1;
+        } else {
+            $pre = (strtotime($ts) - strtotime($s))/86400;
+            $done = (strtotime($t) - strtotime($ts))/86400;
+            $today = 1;
+            $todo = (strtotime($te) - strtotime($t))/86400;
+            $after = (strtotime($e) - strtotime($te))/86400;
         }
-        $html.= '</tr>';
-        return $html;
+
+        return array($pre, $done, $today, $todo, $after);
     }
 
     private function is_holiday($day) {
@@ -144,8 +122,8 @@ class TaskController extends BaseController {
 
     public function addAction() {
         $taskModel = new GanttTaskModel();
-        $pid = $this->getRequest()->getParam('pid', 0);
-        $pro_id = $this->getRequest()->getParam('pro', 0);
+        $pid = $this->getParam('pid', 0);
+        $pro_id = $this->getParam('pro', 0);
         if (empty($pro_id)) {
             throw new GanttException('Invalid param');
         }
@@ -168,42 +146,45 @@ class TaskController extends BaseController {
             Fn::ajaxSuccess($taskModel->getLastInsertId());
         }
         $task = $taskModel->get($pid);
-        $this->getView()->assign('pid', $task['id']);
-        $this->getView()->assign('pro', $pro_id);
+        $project = (new GanttProjectModel())->get($pro_id);
+        $this->getView()->assign('ptask', $task);
+        $this->getView()->assign('project', $project);
     }
 
     public function editAction() {
-        $id = $_POST['id'];
-        $info = (new GantttaskModel())->getRow('SELECT * FROM gantt_task WHERE id=?', array($id));
-        Fn::ajax_success($info);
-        return FALSE;
+        $taskModel = new GanttTaskModel();
+        $id = $this->getParam('id', 0);
+        if (empty($id)) {
+            throw new GanttException('Invalid param');
+        }
+        if ($this->getPost('action') == 'edit') {
+            $this->_valid_csrf();
+            $name = $this->getPost('title', '');
+            $desc = $this->getPost('description', '');
+            $begin = $this->getPost('date_start', '');
+            $end = $this->getPost('date_end', '');
 
-        $id = $_POST['id'];
-        $name = $_POST['name'];
-        $desc = $_POST['desc'];
-        $owner = $_POST['owner'];
-        $relate = $_POST['relate'];
-        $begin = $_POST['begin'];
-        $end = $_POST['end'];
-        $order = $_POST['order'];
-        $info = (new GantttaskModel())->update('gantt_task', array(
-            'name'      => $name,
-            'desc'      => $desc,
-            'ownner'    => $owner,
-            'relation'  => $relate,
-            'begin_date'=> $begin,
-            'end_date'  => $end,
-            'list_order'=> $order,
-        ), array('id'=> $id));
-        Fn::ajaxSuccess($info);
-        return FALSE;
+            // validate data
+            $info = $taskModel->edit($id, array(
+                'title'         => $name,
+                'description'   => $desc,
+                'date_start'    => $begin,
+                'date_end'      => $end,
+            ));
+            Fn::ajaxSuccess($taskModel->getLastInsertId());
+        }
+        $task = $taskModel->getTaskInfo($id);
+        if (empty($task)) {
+            throw new GanttException('Invalid param');
+        }
+        $this->getView()->assign('task', $task);
     }
 
     public function delAction() {
-        $id = $_POST['id'];
-        $info = (new GantttaskModel())->delete('gantt_task', array('id'=> $id));
-        Fn::ajax_success($info);
-        return FALSE;
+        $this->_valid_csrf();
+        $ids = $this->getParam('ids', 0);
+        $info = (new GantttaskModel())->del($ids);
+        Fn::ajaxSuccess($info);
     }
 
 }

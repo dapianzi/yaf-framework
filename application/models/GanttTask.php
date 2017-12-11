@@ -23,9 +23,11 @@ class GanttTaskModel extends DbModel {
         return $this->getAll($sql, $params);
     }
 
-    public function getAllTasks($pro_id) {
-        $sql = "SELECT t.* FROM subtasks t LEFT JOIN project p ON t.pro_id=p.id WHERE p.id=? ";
-        $tasks = $this->getAll($sql, array($pro_id));
+    public function getAllTasks($pro_id, $from='') {
+        $from = empty($from) ? date('Y-m-d', time()-30*86400) : $from;
+        $sql = "SELECT t.* FROM subtasks t LEFT JOIN project p ON t.pro_id=p.id ";
+        $sql.= "WHERE p.id=? AND date_start>=? ORDER BY date_start ASC,sub_task_date_start ASC ";
+        $tasks = $this->getAll($sql, array($pro_id, $from));
         $ret = array();
         foreach ($tasks as $t) {
             if (!isset($ret[$t['id']])) {
@@ -52,6 +54,12 @@ class GanttTaskModel extends DbModel {
             }
         }
         return $ret;
+    }
+
+    public function getTaskInfo($id) {
+        $sql = "SELECT t.*,p.name pro_name,pt.title pt_title FROM task t LEFT JOIN task pt ON t.task_pid=pt.id ";
+        $sql.= "LEFT JOIN project p ON t.pro_id=p.id WHERE t.id=?";
+        return $this->getRow($sql, array($id));
     }
 
 }

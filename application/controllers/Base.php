@@ -69,7 +69,10 @@ class BaseController extends Yaf_Controller_Abstract
     }
 
     protected function getParam($key, $default='') {
-        $s = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
+        $s = $this->getRequest()->getParam($key, $default);
+        if (empty($s)) {
+            $s = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
+        }
         return $this->safeInput($s);
     }
 
