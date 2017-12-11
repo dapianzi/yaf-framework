@@ -28,7 +28,7 @@
             <{foreach from=$projects key=key item=item}>
             <tr>
                 <td><input type="checkbox" name="ids[]" value="<{$item.id}>" /></td>
-                <td><a href="<{$BASE_URI}>/task/index/id/<{$item.id}>"><{$item.name}></a></td>
+                <td><a href="<{$BASE_URI}>/task/index/pro/<{$item.id}>"><{$item.name}></a></td>
                 <td><{$item.date_from}></td>
                 <td><label class="label label-primary"><{$item.task_count}> - <{$item.sub_count}></label></td>
                 <td>

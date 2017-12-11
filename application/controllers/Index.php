@@ -24,6 +24,7 @@ class IndexController extends BaseController {
 
 	public function addprojectAction() {
         if ($this->getPost('action') == 'add') {
+            $this->_valid_csrf();
             $name = $this->getPost('pro_name');
             $start = $this->getPost('from_date');
             $summary = $this->getPost('pro_summary');
@@ -43,7 +44,7 @@ class IndexController extends BaseController {
                 'status' => 0,
             ));
             if ($res) {
-                Fn::ajaxSuccess($this->base_uri.'/task/index/id/'.$proModel->getLastInsertId());
+                Fn::ajaxSuccess($this->base_uri.'/task/index/pro/'.$proModel->getLastInsertId());
             } else {
                 Fn::ajaxError('insert failed.');
             }
@@ -55,6 +56,7 @@ class IndexController extends BaseController {
 	    $id = $this->getParam('id', 0);
         $proModel = new GanttProjectModel();
         if ($this->getPost('action') == 'edit') {
+            $this->_valid_csrf();
             $name = $this->getPost('pro_name');
             $start = $this->getPost('from_date');
             $summary = $this->getPost('pro_summary');
@@ -78,6 +80,7 @@ class IndexController extends BaseController {
 	}
 
 	public function modProjectAction() {
+        $this->_valid_csrf();
         $ids = $this->getPost('ids', 0);
         $act = $this->getPost('action', '');
         $proModel = new GanttProjectModel();
@@ -114,17 +117,7 @@ class IndexController extends BaseController {
         } elseif ($pro['task_count'] == 0) {
             return 0;
         } else {
-            $now = time();
-            $start = strtotime($pro['start']);
-            $end = strtotime($pro['end']);
-            if ($now >= $end) {
-                $progress = 99;
-            } else if ($now <= $start) {
-                $progress = 0;
-            } else {
-                $progress = floor(($now-$start)*100/($end-$start));
-            }
-            return $progress;
+            return Fn::dateProgress($pro['start'], $pro['end'], '', 99);
         }
     }
 

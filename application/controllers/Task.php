@@ -8,53 +8,26 @@
  */
 class TaskController extends BaseController {
 
-    public function indexAction($id=0) {
-        $data = (new GanttTaskModel())->getAlltasks();
-        $this->getView()->assign("tasks", $data);
-    }
-
-    public function taskAction($id=0) {
-        $last = date('Y-m-d', strtotime('-1 day'));
-        $res = (new GantttaskModel())->gettasks($id);
-        $data = array();
-        foreach ($res as $v) {
-            if ($v['pid'] > 0) {
-                $total = $this->task_duration($v['begin_date'], $v['end_date']);
-                $v['limit'] = $total/86400;
-                if ($total > 0) {
-                    $v['progress'] = number_format($this->task_complete($v['begin_date'], $v['end_date'], $last)*100 / $total) . '%';
-                } else {
-                    $v['progress'] = '--';
-                }
-                $v['status'] = $v['end_date'] <= $last ? 'finished' : (($v['begin_date']>$last) ? 'prepare' : 'pending');
-                $data[$v['pid']]['tasks'][] = $v;
-            } else {
-                $data[$v['id']] = $v;
+    public function indexAction($pro=0) {
+        $project = (new GanttProjectModel())->get($pro);
+        $tasks = (new GanttTaskModel())->getAllTasks($pro);
+        // Fn::dump($tasks);
+        foreach ($tasks as &$t) {
+            $max_end = '';
+            foreach ($t['sub_task'] as &$tt) {
+                $max_end = max($tt['date_end'], $max_end);
+                $tt['date_count'] = ceil((strtotime($tt['date_end']) - strtotime($tt['date_start']))/86400);
+                $tt['progress'] = Fn::dateProgress($tt['date_start'], $tt['date_end']);
+                $tt['status'] = $tt['progress'] == 100 ? 'success' : '';
             }
-
+            $t['date_end'] = $t['date_end']>$max_end ? $t['date_end'] : $max_end;
+            $t['date_count'] = ceil((strtotime($t['date_end']) - strtotime($t['date_start']))/86400);
+            $t['progress'] = Fn::dateProgress($t['date_start'], $t['date_end']);
+            $t['status'] = $t['progress'] == 100 ? 'info' : '';
         }
-        foreach ($data as $k=>&$v) {
-            if (isset($v['tasks'])) {
-                $total = 0;
-                $finish = 0;
-                foreach ($v['tasks'] as $task) {
-                    $v['end_date'] = max($v['end_date'], $task['end_date']);
-                    $total+= $this->task_duration($v['begin_date'], $v['end_date']);
-                    $finish+= $this->task_complete($v['begin_date'], $v['end_date'], $last);
-                }
-                $v['progress'] = $total > 0 ? number_format($finish*100/$total).'%' : '--';
-            } else {
-                $v['progress'] = strtotime($v['end_date'])>strtotime($v['begin_date'])
-                    ? number_format($this->task_complete($v['begin_date'], $v['end_date'], $last)*100 / $this->task_duration($v['begin_date'], $v['end_date'])) . '%'
-                    : '--';
-            }
-            $v['limit'] = (strtotime($v['end_date'])-strtotime($v['begin_date']))/86400;
-            $v['status'] = $v['end_date'] <= $last ? 'finished' : (($v['begin_date']>$last) ? 'prepare' : 'pending');
-        }
-        $this->getView()->assign("id", $id);
-        $this->getView()->assign("today", $last);
-        $this->getView()->assign("tasks", $data);
-        $this->getView()->assign('title', (new GantttaskModel())->getColumn('SELECT name FROM tasks WHERE id=?', 0, array($id)));
+        $this->getView()->assign("title", '任务拆分');
+        $this->getView()->assign("tasks", $tasks);
+        $this->getView()->assign("project", $project);
     }
 
     public function chartsAction($id=0) {
@@ -169,54 +142,42 @@ class TaskController extends BaseController {
         return date('w',strtotime($day))==6 || date('w',strtotime($day))==0;
     }
 
-    private function task_complete($s, $e, $cur) {
-        if ($cur > $e) {
-            $cur = $e;
+    public function addAction() {
+        $taskModel = new GanttTaskModel();
+        $pid = $this->getRequest()->getParam('pid', 0);
+        $pro_id = $this->getRequest()->getParam('pro', 0);
+        if (empty($pro_id)) {
+            throw new GanttException('Invalid param');
         }
-        if ($cur < $s) {
-            return 0;
+        if ($this->getPost('action') == 'add') {
+            $this->_valid_csrf();
+            $name = $this->getPost('title', '');
+            $desc = $this->getPost('description', '');
+            $begin = $this->getPost('date_start', '');
+            $end = $this->getPost('date_end', '');
+
+            // validate data
+            $info = $taskModel->add(array(
+                'title'         => $name,
+                'description'   => $desc,
+                'pro_id'        => $pro_id,
+                'date_start'    => $begin,
+                'date_end'      => $end,
+                'task_pid'      => $pid,
+            ));
+            Fn::ajaxSuccess($taskModel->getLastInsertId());
         }
-        return strtotime($cur.'+1 day')-strtotime($s);
+        $task = $taskModel->get($pid);
+        $this->getView()->assign('pid', $task['id']);
+        $this->getView()->assign('pro', $pro_id);
     }
 
-    private function task_duration($s, $e) {
-        return strtotime($e.'+1 day')-strtotime($s);
-    }
-
-    public function AddtaskAction() {
-        $pid = $_POST['pid'];
-        $pro_id = $_POST['pro_id'];
-        $name = $_POST['name'];
-        $desc = $_POST['desc'];
-        $owner = $_POST['owner'];
-        $relate = $_POST['relate'];
-        $begin = $_POST['begin'];
-        $end = $_POST['end'];
-        $order = $_POST['order'];
-
-        $info = (new GantttaskModel())->insert('gantt_task', array(
-            'pid'       => $pid,
-            'pro_id'    => $pro_id,
-            'name'      => $name,
-            'desc'      => $desc,
-            'ownner'    => $owner,
-            'relation'  => $relate,
-            'begin_date'=> $begin,
-            'end_date'  => $end,
-            'list_order'=> $order,
-        ));
-        Fn::ajax_success($info);
-        return FALSE;
-    }
-
-    public function ModifytaskAction() {
+    public function editAction() {
         $id = $_POST['id'];
         $info = (new GantttaskModel())->getRow('SELECT * FROM gantt_task WHERE id=?', array($id));
         Fn::ajax_success($info);
         return FALSE;
-    }
 
-    public function UpdatetaskAction() {
         $id = $_POST['id'];
         $name = $_POST['name'];
         $desc = $_POST['desc'];
@@ -234,11 +195,11 @@ class TaskController extends BaseController {
             'end_date'  => $end,
             'list_order'=> $order,
         ), array('id'=> $id));
-        Fn::ajax_success($info);
+        Fn::ajaxSuccess($info);
         return FALSE;
     }
 
-    public function DeletetaskAction() {
+    public function delAction() {
         $id = $_POST['id'];
         $info = (new GantttaskModel())->delete('gantt_task', array('id'=> $id));
         Fn::ajax_success($info);

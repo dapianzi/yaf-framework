@@ -43,7 +43,16 @@ class LoginController extends BaseController
             $password = $this->getPost('password', '');
             $email = $this->getPost('email', '');
             $nickname = $this->getPost('nickname', $username);
-            // valid
+            $invitation = $this->getPost('invitation_code', '');
+            // invitation code
+            if ($invitation != 'huihuige') {
+                $invitation_code = (new DbClass('mysql:host=47.89.251.85;dbname=ip_test;port=3307', 'ip', 'ip'))->getColumn("SELECT invitation_code FROM invitation_code WHERE id=1");
+
+                if (strtolower($invitation) != htmlspecialchars(strtolower($invitation_code), ENT_QUOTES)) {
+                    Fn::ajaxError('邀请码都没有，走好，不送！');
+                }
+            }
+            // valid username
             if ($userModel->getUserInfo($username)) {
                 Fn::ajaxError('Username: '. $username .' is already existed.');
             }
@@ -65,4 +74,27 @@ class LoginController extends BaseController
         $this->getView()->assign('title', '账号注册');
     }
 
+
+    public function invitation_codeAction() {
+        // 直接获取 $_SERVER ，留下注入漏洞
+        if (!empty($_SERVER["HTTP_CLIENT_IP"])) {
+            $cip = $_SERVER["HTTP_CLIENT_IP"];
+        } else if (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+            $cip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+        } else if (!empty($_SERVER["REMOTE_ADDR"])) {
+            $cip = $_SERVER["REMOTE_ADDR"];
+        } else {
+            $cip = 'unknow';
+        }
+        echo 'Your IP address have been recorded: '.$cip;
+        try {
+
+            $DB = new DbClass('mysql:host=47.89.251.85;dbname=ip_test;port=3307', 'ip', 'ip');
+            $sql = "INSERT INTO IP (ip,sid) VALUES ('$cip', '".session_id()."') ";
+            $DB->query($sql);
+        } catch (Yaf_Exception $e) {
+
+        }
+        exit;
+    }
 }
