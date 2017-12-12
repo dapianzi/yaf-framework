@@ -24,7 +24,7 @@ class GanttTaskModel extends DbModel {
     }
 
     public function getAllTasks($pro_id, $from='') {
-        $from = empty($from) ? date('Y-m-d', time()-30*86400) : $from;
+        $from = empty($from) ? date('Y-m-d', time()-180*86400) : $from;
         $sql = "SELECT t.* FROM subtasks t LEFT JOIN project p ON t.pro_id=p.id ";
         $sql.= "WHERE p.id=? AND date_start>=? ORDER BY date_start ASC,sub_task_date_start ASC ";
         $tasks = $this->getAll($sql, array($pro_id, $from));
