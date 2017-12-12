@@ -194,7 +194,7 @@ class TaskController extends BaseController {
                     }
                 }
             }
-            //$taskModel->delTask($ids);
+            $taskModel->del($ids);
         }
         Fn::ajaxSuccess($ids);
     }
