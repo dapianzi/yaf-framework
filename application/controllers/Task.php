@@ -177,11 +177,11 @@ class TaskController extends BaseController {
         $ids = $this->getParam('ids', 0);
         $taskModel = new GanttTaskModel();
         if ($ids) {
-            // only belong ownner
+            // only own tasks
             $ids = is_array($ids) ? $ids : array($ids);
             $sql = "SELECT t.id,p.ownner,ct.id cid FROM task t LEFT JOIN project p ON t.pro_id=p.id ";
             $sql.= "LEFT JOIN task ct ON t.id=ct.task_pid ";
-            $sql.= "WHERE t.id IN (" . array_fill(0, count($ids), '?').") ";
+            $sql.= "WHERE t.id IN (" . implode(',', array_fill(0, count($ids), '?')) . ") ";
             $res = $taskModel->getAll($sql, $ids);
             $ids = array();
             foreach ($res as $r) {
@@ -194,7 +194,7 @@ class TaskController extends BaseController {
                     }
                 }
             }
-            //$taskModel->delTask($ids);
+            $taskModel->delTask($ids);
         }
         Fn::ajaxSuccess($ids);
     }

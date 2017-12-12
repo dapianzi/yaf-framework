@@ -55,6 +55,8 @@ class IndexController extends BaseController {
 	public function editprojectAction() {
 	    $id = $this->getParam('id', 0);
         $proModel = new GanttProjectModel();
+        $pro_info = $proModel->get($id);
+        $this->_valid_user($pro_info['ownner']);
         if ($this->getPost('action') == 'edit') {
             $this->_valid_csrf();
             $name = $this->getPost('pro_name');
@@ -74,7 +76,7 @@ class IndexController extends BaseController {
                 Fn::ajaxError('insert failed.');
             }
         }
-        $pro_info = $proModel->get($id);
+
         $this->getView()->assign('pro', $pro_info);
         $this->getView()->assign('action', 'edit');
 	}
@@ -84,6 +86,20 @@ class IndexController extends BaseController {
         $ids = $this->getPost('ids', 0);
         $act = $this->getPost('action', '');
         $proModel = new GanttProjectModel();
+
+        if (empty($ids)) {
+            throw new GanttException('Invalid Param');
+        }
+        // own project only
+        $ids = is_array($ids) ? $ids : array($ids);
+        $sql = "SELECT id,ownner FROM project WHERE id IN (" . implode(',', array_fill(0, count($ids), '?')) . ")";
+        $res = $proModel->getAll($sql, $ids);
+        $ids = array();
+        foreach ($res as $r) {
+            if ($this->_valid_user($r['ownner'], FALSE)) {
+                $ids[] = $r['id'];
+            }
+        }
         switch ($act) {
             case 'del':
                 $res = $proModel->del($ids);
