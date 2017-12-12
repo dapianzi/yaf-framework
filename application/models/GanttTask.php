@@ -57,7 +57,7 @@ class GanttTaskModel extends DbModel {
     }
 
     public function getTaskInfo($id) {
-        $sql = "SELECT t.*,p.name pro_name,pt.title pt_title FROM task t LEFT JOIN task pt ON t.task_pid=pt.id ";
+        $sql = "SELECT t.*,p.name pro_name,p.ownner,pt.title pt_title FROM task t LEFT JOIN task pt ON t.task_pid=pt.id ";
         $sql.= "LEFT JOIN project p ON t.pro_id=p.id WHERE t.id=?";
         return $this->getRow($sql, array($id));
     }

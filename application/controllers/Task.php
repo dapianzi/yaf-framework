@@ -10,6 +10,7 @@ class TaskController extends BaseController {
 
     public function indexAction($pro=0) {
         $project = (new GanttProjectModel())->get($pro);
+        $this->_valid_user($project['ownner']);
         $tasks = (new GanttTaskModel())->getAllTasks($pro);
         // Fn::dump($tasks);
         foreach ($tasks as &$t) {
@@ -30,10 +31,10 @@ class TaskController extends BaseController {
         $this->getView()->assign("project", $project);
     }
 
-    public function ganttAction()
-    {
+    public function ganttAction() {
         $pro = $this->getParam('pro', 0);
         $project = (new GanttProjectModel())->get($pro);
+        $this->_valid_user($project['ownner']);
         $this->getView()->assign('project', $project);
         $tasks = (new GanttTaskModel())->getAllTasks($pro, date('Y-m-d', time()-180*86400));
         // Fn::dump($tasks);
@@ -104,29 +105,17 @@ class TaskController extends BaseController {
         return array($pre, $done, $today, $todo, $after);
     }
 
-    private function is_holiday($day) {
-        $holiday = array(
-            '2017-05-29','2017-05-30',
-        );
-        $workday = array(
-            '2017-05-27',
-        );
-        if (in_array($day, $holiday)) {
-            return TRUE;
-        }
-        if (in_array($day, $workday)) {
-            return FALSE;
-        }
-        return date('w',strtotime($day))==6 || date('w',strtotime($day))==0;
-    }
-
     public function addAction() {
-        $taskModel = new GanttTaskModel();
         $pid = $this->getParam('pid', 0);
         $pro_id = $this->getParam('pro', 0);
-        if (empty($pro_id)) {
-            throw new GanttException('Invalid param');
+        $taskModel = new GanttTaskModel();
+        $task = $taskModel->get($pid);
+        $project = (new GanttProjectModel())->get($pro_id);
+        $this->_valid_user($project['ownner']);
+        if ($task && $task['pro_id'] != $project['id']) {
+            throw new GanttException('Invalid Params');
         }
+
         if ($this->getPost('action') == 'add') {
             $this->_valid_csrf();
             $name = $this->getPost('title', '');
@@ -145,8 +134,7 @@ class TaskController extends BaseController {
             ));
             Fn::ajaxSuccess($taskModel->getLastInsertId());
         }
-        $task = $taskModel->get($pid);
-        $project = (new GanttProjectModel())->get($pro_id);
+
         $this->getView()->assign('ptask', $task);
         $this->getView()->assign('project', $project);
     }
@@ -154,9 +142,12 @@ class TaskController extends BaseController {
     public function editAction() {
         $taskModel = new GanttTaskModel();
         $id = $this->getParam('id', 0);
-        if (empty($id)) {
+
+        $task = $taskModel->getTaskInfo($id);
+        if (empty($task)) {
             throw new GanttException('Invalid param');
         }
+        $this->_valid_user($task['ownner']);
         if ($this->getPost('action') == 'edit') {
             $this->_valid_csrf();
             $name = $this->getPost('title', '');
@@ -165,26 +156,47 @@ class TaskController extends BaseController {
             $end = $this->getPost('date_end', '');
 
             // validate data
-            $info = $taskModel->edit($id, array(
+            $res = $taskModel->edit($id, array(
                 'title'         => $name,
                 'description'   => $desc,
                 'date_start'    => $begin,
                 'date_end'      => $end,
             ));
-            Fn::ajaxSuccess($taskModel->getLastInsertId());
+            if ($res) {
+                Fn::ajaxSuccess($taskModel->getLastInsertId());
+            } else {
+                Fn::ajaxError($taskModel->getError());
+            }
         }
-        $task = $taskModel->getTaskInfo($id);
-        if (empty($task)) {
-            throw new GanttException('Invalid param');
-        }
+
         $this->getView()->assign('task', $task);
     }
 
     public function delAction() {
         $this->_valid_csrf();
         $ids = $this->getParam('ids', 0);
-        $info = (new GantttaskModel())->del($ids);
-        Fn::ajaxSuccess($info);
+        $taskModel = new GanttTaskModel();
+        if ($ids) {
+            // only belong ownner
+            $ids = is_array($ids) ? $ids : array($ids);
+            $sql = "SELECT t.id,p.ownner,ct.id cid FROM task t LEFT JOIN project p ON t.pro_id=p.id ";
+            $sql.= "LEFT JOIN task ct ON t.id=ct.task_pid ";
+            $sql.= "WHERE t.id IN (" . array_fill(0, count($ids), '?').") ";
+            $res = $taskModel->getAll($sql, $ids);
+            $ids = array();
+            foreach ($res as $r) {
+                if ($this->_valid_user($r['ownner'], FALSE)) {
+                    if (!in_array($r['id'], $ids)){
+                        $ids[] = $r['id'];
+                    }
+                    if (isset($r['cid']) && !in_array($r['cid'], $ids)){
+                        $ids[] = $r['cid'];
+                    }
+                }
+            }
+            //$taskModel->delTask($ids);
+        }
+        Fn::ajaxSuccess($ids);
     }
 
 }
