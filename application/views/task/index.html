@@ -45,7 +45,7 @@
                         <{elseif $t.progress >= '30'}> progress-bar-info progress-bar-striped active
                         <{else}> progress-bar-warning progress-bar-striped active
                         <{/if}>" role="progressbar" aria-valuenow="<{$t.progress}>" aria-valuemin="0" aria-valuemax="100" style="width: <{$t.progress}>%;">
-                                <span class="sr-only"><{t.progress}>%</span>
+                                <span class="sr-only"><{$t.progress}>%</span>
                             </div>
                         </div>
                     </td>
