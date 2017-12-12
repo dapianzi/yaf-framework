@@ -109,5 +109,11 @@ class BaseController extends Yaf_Controller_Abstract
         return FALSE;
     }
 
-
+    protected function _valid_user($user, $throwable=TRUE) {
+        $valid = $this->gantt_user['is_admin'] || $this->gantt_user['username'] == $user;
+        if ($throwable && !$valid) {
+            throw new GanttException('Invalid User');
+        }
+        return $valid;
+    }
 }
