@@ -41,7 +41,7 @@ class TaskController extends BaseController {
         $date_s = date('Y-m-d', time()-7*86400);
         $date_e = date('Y-m-d', time()+21*86400);
         foreach ($tasks as &$task) {
-            $max_end = date('Y-m-d');
+            $max_end = $date_s;
             foreach ($task['sub_task'] as &$sub_task) {
                 $max_end = max($sub_task['date_end'], $max_end);
             }

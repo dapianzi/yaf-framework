@@ -14,7 +14,11 @@ class IndexController extends BaseController {
      */
 	public function indexAction() {
 		$proModel = new GanttProjectModel();
-		$myProjects = $proModel->getUserProjectSummary($this->gantt_user['username']);
+		// manager own project only
+		$filter = array(
+		    'owner' => $this->gantt_user['username']
+        );
+		$myProjects = $proModel->getUserProjectSummary($filter);
 		foreach ($myProjects as &$p) {
 		    $p['progress'] = $this->projectProgress($p);
         }
@@ -130,8 +134,8 @@ class IndexController extends BaseController {
             return -1;
         } elseif ($pro['status'] == 1) {
             return 100;
-        } elseif ($pro['task_count'] == 0) {
-            return 0;
+        //} elseif ($pro['task_count'] == 0) {
+        //   return 0;
         } else {
             return Fn::dateProgress($pro['start'], $pro['end'], '', 99);
         }

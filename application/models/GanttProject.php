@@ -16,13 +16,17 @@ class GanttProjectModel extends DbModel {
         return $this->getAll($sql, array($id));
     }
 
-    function getUserProjectSummary($user, $filter=array()) {
-        $sql = "SELECT p.id,p.adate,p.date_from,p.name,p.summary,p.is_public,p.status,";
+    function getUserProjectSummary($filter=array()) {
+        $sql = "SELECT p.id,p.adate,p.date_from,p.name,p.summary,p.is_public,p.status,p.ownner,";
         $sql.= "MIN(t.task_start)start,MAX(t.task_end)end,SUM(sub_task_count)sub_count,SUM(task_count)task_count ";
         $sql.= "FROM project p LEFT JOIN tasks t ON p.id=t.pro_id ";
-        $sql.= "WHERE ownner=? GROUP BY p.id ";
-        $params = array($user);
+        $sql.= "WHERE 1 ";
+        $params = array();
         if (!empty($filter)) {
+            if (isset($filter['owner'])) {
+                $sql.= "AND ownner=? ";
+                array_push($params, $filter['owner']);
+            }
             if (isset($filter['status'])) {
                 $sql.= "AND status=? ";
                 array_push($params, $filter['status']);
@@ -46,6 +50,14 @@ class GanttProjectModel extends DbModel {
                 }
             }
         }
+        $sql .= "GROUP BY p.id ";
         return $this->getAll($sql, $params);
+    }
+
+    public function getPublicPorjects($filter = array()) {
+        $sql = "SELECT p.*,u.nickname FROM project p LEFT JOIN user u ON p.ownner=u.username WHERE is_public=1 ";
+        // todo: filter project
+
+        return $this->getAll($sql);
     }
 }
