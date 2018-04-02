@@ -1,1 +1,40 @@
 <{extends 'public/base.html'}>
+
+<{block name=body}>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">基本环境</div>
+                <div class="layui-card-body">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="100">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td>当前版本</td>
+                            <td>v1.0.0-alpha</td>
+                        </tr>
+                        <tr>
+                            <td>基于框架</td>
+                            <td>Yaf/Smarty/LayUI</td>
+                        </tr>
+                        <tr>
+                            <td>PHP 版本</td>
+                            <td><{$env.php_version}></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL 版本</td>
+                            <td><{$env.mysql_version}></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<{/block}>
+

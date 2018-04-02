@@ -19,20 +19,20 @@ class IndexController extends BaseController {
 		$menu = [
 			[
 				'page' =>'控制台',
-				'href' => '/index/dashboard/',
+				'href' => '/index/index/dashboard/',
 				'icon' => 'home',
-				'items' => [],
+				'items' => FALSE,
 			],
 			[
 				'page' =>'系统设置',
 				'icon' => 'set',
 				'auto' => TRUE,
 				'items' => [
-					'参数设置' => '/system/index',
-					'用户列表' => '/user/index/',
-					'用户组' => '/user/group/',
-					'权限管理' => '/user/permission-list/',
-					'菜单管理' => '/menu/index/',
+					'参数设置' => '/index/system/index',
+					'用户列表' => '/index/user/index/',
+					'用户组' => '/index/user/group/',
+					'权限管理' => '/index/user/permission-list/',
+					'菜单管理' => '/index/menu/index/',
 				]
 			],
 			[
@@ -40,9 +40,9 @@ class IndexController extends BaseController {
 			 	'icon' => 'component',
 			 	'auto' => FALSE,
 			 	'items' => [
-					'设备查询' => '/object/index/',
-					'设备录入' => '/object/add/',
-					'设备变更' => '/object/modify/',
+					'设备查询' => '/index/object/index/',
+					'设备录入' => '/index/object/add/',
+					'设备变更' => '/index/object/modify/',
 				]
 			],
 			[
@@ -50,7 +50,7 @@ class IndexController extends BaseController {
 				'icon' => 'analysis',
 				'auto' => FALSE,
 			 	'items' => [
-					'设备统计' => '/analysis/objects/',
+					'设备统计' => '/index/analysis/objects/',
 				]
 			],
 		];

@@ -48,7 +48,7 @@
         <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
           
           <li class="layui-nav-item" lay-unselect>
-            <a lay-href="/message/" tppabs="/message/" layadmin-event="message" lay-text="消息中心">
+            <a lay-href="/index/message/" tppabs="/index/message/" layadmin-event="message" lay-text="消息中心">
               <i class="layui-icon layui-icon-notice"></i>  
               <!-- 如果有新消息，则显示小圆点 -->
               <{if $unread_messages}>
@@ -62,13 +62,13 @@
               <cite>贤心</cite>
             </a>
             <dl class="layui-nav-child">
-              <dd><a lay-href="/account/info/" tppabs="/account/info/">基本资料</a></dd>
-              <dd><a lay-href="/account/password/" tppabs="/account/password/">修改密码</a></dd>
+              <dd><a lay-href="/index/account/info/" tppabs="/index/account/info/">基本资料</a></dd>
+              <dd><a lay-href="/index/account/password/" tppabs="/index/account/password/">修改密码</a></dd>
               <hr>
               <dd style="text-align: center;"><a href="/index/logout/">退出</a></dd>
             </dl>
             <{else}>
-            <a href="/index/login/">登录</a>
+            <a href="/index/index/login/">登录</a>
             <{/if}>
           </li>
           
@@ -130,7 +130,7 @@
         </div>
         <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
           <ul class="layui-tab-title" id="LAY_app_tabsheader">
-            <li lay-id="/index/dashboard/" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+            <li lay-id="/index/index/dashboard/" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
           </ul>
         </div>
       </div>
@@ -139,7 +139,7 @@
       <!-- 主体内容 -->
       <div class="layui-body" id="LAY_app_body">
         <div class="layadmin-tabsbody-item layui-show">
-          <iframe src="/index/dashboard/" tppabs="/index/dashboard/" frameborder="0" class="layadmin-iframe"></iframe>
+          <iframe src="/index/index/dashboard/" tppabs="/index/index/dashboard/" frameborder="0" class="layadmin-iframe"></iframe>
         </div>
       </div>
       
