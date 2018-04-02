@@ -43,14 +43,14 @@ class BaseController extends Yaf_Controller_Abstract
     /**
      * 重写render方法，自动根据模块加载模板
      */
-    public function render($action, $vars = null){
+    protected function render($action, array $parameters = null){
         $template_name = str_ireplace('Controller', '', get_class($this)).'/'.$action;
         $module = strtolower($this->getRequest()->module);
         if ($module != $this->conf->application->dispatcher->defaultModule) {
             $template_name = $module.'/'.$template_name;
         }
         $template_name = strtolower($template_name.'.'.$this->conf->application->view->ext);
-        return $this->getView()->render($template_name, $vars);
+        return $this->getView()->render($template_name, $parameters);
     }
 
     protected function getParam($key, $default='') {
