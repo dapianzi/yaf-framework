@@ -23,7 +23,7 @@ class ErrorController extends Yaf_Controller_Abstract {
 
 //            case WS_INVALID_ADMIN:
 			case WS_EXCEPTION:{
-				header("HTTP/1.1 404 Forbidden");
+				header("HTTP/1.1 404 Not Found");
 				break;
 			}
 //            case YAF_ERR_LOADFAILD:
@@ -41,6 +41,7 @@ class ErrorController extends Yaf_Controller_Abstract {
 
 		$this->getView()->assign('code', $exception->getCode());
 		$this->getView()->assign('message', $exception->getMessage());
+		$this->getView()->assign('exception', get_class($exception));
 		$this->getView()->display('public/error.html');
 		return FALSE;
 	}
