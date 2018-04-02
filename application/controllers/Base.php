@@ -20,7 +20,6 @@ class BaseController extends Yaf_Controller_Abstract
         $conf = Yaf_Registry::get('config');
         $this->conf = $conf;
         $this->base_uri = $conf->application->baseUri;
-
         $this->getView()->assign('BASE_URI', $this->base_uri);
         $_SESSION['user'] = 'dapianzi';
         // init request mode

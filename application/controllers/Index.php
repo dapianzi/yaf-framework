@@ -15,13 +15,12 @@ class IndexController extends BaseController {
 	public function indexAction() {
 		// test pod class
 		$menu = [];
-
 		$menu = [
 			[
 				'page' =>'控制台',
-				'href' => '/index/dashboard/',
+				'href' => '/index/index/dashboard/',
 				'icon' => 'home',
-				'items' => [],
+				'items' => false,
 			],
 			[
 				'page' =>'系统设置',
