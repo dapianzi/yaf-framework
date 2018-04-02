@@ -22,8 +22,8 @@ class ErrorController extends Yaf_Controller_Abstract {
 		switch($exception->getCode()) {
 
 //            case WS_INVALID_ADMIN:
-			case GANTT_EXCEPTION:{
-				header("HTTP/1.1 403 Forbidden");
+			case WS_EXCEPTION:{
+				header("HTTP/1.1 404 Forbidden");
 				break;
 			}
 //            case YAF_ERR_LOADFAILD:
@@ -41,6 +41,7 @@ class ErrorController extends Yaf_Controller_Abstract {
 
 		$this->getView()->assign('code', $exception->getCode());
 		$this->getView()->assign('message', $exception->getMessage());
-		//return false;
+		$this->getView()->display('public/error.html');
+		return FALSE;
 	}
 }

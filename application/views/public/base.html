@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title><{block name=title}>此处应有标题<{/block}></title>
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/admin.css" media="all">
+
+    <script type="text/javascript">
+        var __BASE__ = '<{$BASE_URI}>';
+    </script>
+    <!-- static files -->
+    <{block name=static}><{/block}>
+</head>
+<body class="layui-layout-body">
+    <{block name=body}>
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">基本环境</div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="100">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <td>当前版本</td>
+                                <td>v1.0.0-alpha</td>
+                            </tr>
+                            <tr>
+                                <td>基于框架</td>
+                                <td>Yaf/Smarty/LayUI</td>
+                            </tr>
+                            <tr>
+                                <td>PHP 版本</td>
+                                <td><{$env.php_version}></td>
+                            </tr>
+                            <tr>
+                                <td>MySQL 版本</td>
+                                <td><{$env.mysql_version}></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <{/block}>
+    <{block name=script}><{/block}>
+</body>
+</html>

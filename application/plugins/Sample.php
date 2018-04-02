@@ -12,14 +12,17 @@ class SamplePlugin extends Yaf_Plugin_Abstract {
 	}
 
 	public function routerShutdown(Yaf_Request_Abstract $request, Yaf_Response_Abstract $response) {
-		//$router = Yaf_Dispatcher::getInstance()->getCurrentRoute();
-		//var_dump($router);
+//		$router = $request->getCurrentRoute();
+
+
+//		$request->module);
 		//var_dump(getCurrentRoute()); //在路由结束以后, 获取起作用的路由协议
-		//var_dump(getRoute());
-		//var_dump(getRoutes());
+//		var_dump(getRoute());
+//		var_dump(getRoutes());
 	}
 
 	public function dispatchLoopStartup(Yaf_Request_Abstract $request, Yaf_Response_Abstract $response) {
+
 	}
 
 	public function preDispatch(Yaf_Request_Abstract $request, Yaf_Response_Abstract $response) {

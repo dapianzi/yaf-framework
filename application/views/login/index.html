@@ -1,34 +1,9 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <{include file="public/header.html"}>
-</head>
-<body>
-<{include file="public/head.html"}>
-<div class="main container">
-    <h2 class="page-header">Login</h2>
-    <div class="row">
-        <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6">
-            <{if isset($err)}>
-            <div class="alert alert-danger"><{$err}></div>
-            <{/if}>
-            <form method="post" action="<{$BASE_URI}>/login">
-                <{$csrf_input}>
-                <input type="hidden" name="ref" value="<{$ref}>" />
-                <div class="form-group">
-                    <label class=" control-label" for="username">用户名</label>
-                    <input type="text" class="form-control" name="username" id="username" placeholder="username">
-                </div>
-                <div class="form-group">
-                    <label class=" control-label" for="password">密码</label>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="password">
-                </div>
-                <button class="btn btn-primary" name="action" value="login">登录</button>
-                <a class="btn btn-default" href="<{$BASE_URI}>/login/sign">注册</a>
-            </form>
-        </div>
-    </div>
-</div>
-<{include file="public/foot.html"}>
-</body>
-</html>
+<{extends file='public/base.html'}>
+
+<{block name=main}>
+<form action="/ws-cmdb/login/dologin" method="post" class="form-horizontal">
+
+    <input class="" type="input" name="user" />
+    <button class="btn-default btn btn-sm">登录</button>
+</form>
+<{/block}>

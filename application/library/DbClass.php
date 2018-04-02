@@ -35,9 +35,10 @@ class DbClass
         {
             $this->dbLink = new PDO ($dsn, $username, $password, $opts);
         }
-        catch (PDOException $e)
+        catch (Exception $e)
         {
-            $this->errMessage = "Database connection failed:\n\n" . $e->getMessage();
+            $this->errMessage = "Database connect failed:\n\n" . $e->getMessage();
+            throw new WSException($this->errMessage);
         }
     }
 
@@ -45,7 +46,7 @@ class DbClass
         return !!$this->dbLink;
     }
 
-    public function query($sql, $param = array()) {
+    public function execute($sql, $param = array()) {
         try {
             $pre = $this->dbLink->prepare($sql);
             $pre->execute($param);
@@ -53,122 +54,110 @@ class DbClass
             return $pre;
         } catch (PDOException $e) {
             $this->errMessage = $e->getMessage();
-            throw new Yaf_Exception($e);
+            throw new WSException($e);
         }
     }
 
     public function insert($table, $columns) {
-        $query = " INSERT INTO {$table} (`" . implode ('`, `', array_keys ($columns));
-        $query .= '`) VALUES (' . $this->questionMarks (count ($columns)) . ')';
+        $sql = " INSERT INTO {$table} (`" . implode ('`, `', array_keys ($columns));
+        $sql .= '`) VALUES (' . $this->questionMarks (count ($columns)) . ')';
         // Now the query should be as follows:
         // INSERT INTO table (c1, c2, c3) VALUES (?, ?, ?)
-        try
-        {
-            $pre = $this->dbLink->prepare ($query);
-            $pre->execute (array_values ($columns));
-            $this->lastSql = $pre->queryString;
-            return $pre->rowCount();
-        }
-        catch (PDOException $e)
-        {
-            $this->errMessage = $e->getMessage();
-            throw new Yaf_Exception($e);
+        $res = $this->execute($sql, array_values($columns))->rowCount();
+        if ($res > 0) {
+            return $this->dbLink->lastInsertId();
+        } else {
+            return FALSE;
         }
     }
 
     public function update($table, $param, $where, $conjunction = 'AND') {
         if (!count($param)) {
-            $this->errMessage = 'delete must have set.';
-            throw new Yaf_Exception('delete must have set.');
+            $this->errMessage = 'update must have set.';
+            throw new WSException('update must have set.');
         }
         if (!count($where)) {
-            $this->errMessage = 'delete must have where.';
-            throw new Yaf_Exception('delete must have where.');
+            $this->errMessage = 'update must have where.';
+            throw new WSException('update must have where.');
         }
         $whereValues = array();
-        $sql = " UPDATE $table SET " . $this->makeSetSQL(array_keys($param)) . ' WHERE ' . $this->makeWhereSQL($where, $conjunction, $whereValues);
-        try {
-            $pre = $this->dbLink->prepare ($sql);
-            $pre->execute (array_merge (array_values ($param), $whereValues));
-            $this->lastSql = $pre->queryString;
-            return $pre->rowCount();
-        } catch (PDOException $e) {
-            $this->errMessage = $e->getMessage();
-            throw new Yaf_Exception($e);
-        }
+        $sql = " UPDATE $table SET " . $this->makeSetSQL($param) . ' WHERE ' . $this->makeWhereSQL($where, $conjunction, $whereValues);
+        return $this->execute($sql, array_merge (array_values ($param), $whereValues))->rowCount();
     }
 
     public function delete($table, $where, $conjunction = 'AND') {
         if (!count($where)) {
             $this->errMessage = 'delete must have where.';
-            throw new Yaf_Exception('delete must have where.');
+            throw new WSException('delete must have where.');
         }
         $whereValues = array();
         $sql = " DELETE FROM $table WHERE " . $this->makeWhereSQL($where, $conjunction, $whereValues);
-        try {
-            $pre = $this->dbLink->prepare ($sql);
-            $pre->execute ($whereValues);
-            $this->lastSql = $pre->queryString;
-            return $pre->rowCount();
-        } catch (PDOException $e) {
-            $this->errMessage = $e->getMessage();
-            throw new Yaf_Exception($e);
-        }
+        return $this->execute ($sql, $whereValues)->rowCount();
     }
 
-    public function beginTransaction() {
+    /**
+     * 开启事务
+     * @return bool
+     */
+    public function begin() {
         return $this->dbLink->beginTransaction();
     }
 
+    /**
+     * 事务提交
+     * @return bool
+     */
     public function commit() {
         return $this->dbLink->commit();
     }
 
+    /**
+     * 事务回滚
+     * @return bool
+     */
     public function rollBack() {
         return $this->dbLink->rollBack();
     }
 
     public function getColumn($sql, $col = 0, $param = array()) {
-        $res = $this->query($sql, $param);
-        return $res->fetchColumn($col);
+        return $this->execute($sql, $param)->fetchColumn($col);
     }
 
     public function getKeyValue($sql, $param = array()) {
-        $res = $this->query($sql, $param);
-        return $res->fetchAll(PDO::FETCH_KEY_PAIR);
+        return $this->execute($sql, $param)->fetchAll(PDO::FETCH_KEY_PAIR);
     }
 
     public function getCount($sql, $param = array()) {
-        $res = $this->query($sql, $param);
-        return $res->rowCount();
+        return $this->execute($sql, $param)->rowCount();
     }
 
     public function getAll($sql, $param = array()) {
-        $pre = $this->query($sql, $param);
-        return $pre->fetchAll(PDO::FETCH_ASSOC);
+        return $this->execute($sql, $param)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getRow($sql, $param = array()) {
-        $pre = $this->query($sql, $param);
-        return $pre->fetch(PDO::FETCH_ASSOC);
+        return $this->execute($sql, $param)->fetch(PDO::FETCH_ASSOC);
     }
 
     public function makeSetSQL($columns) {
-        if (! count ($columns))
-            throw new Yaf_Exception ('columns must not be empty');
+        if (! count ($columns)) {
+            throw new WSException ('columns must not be empty');
+        }
         $tmp = array();
         // Same syntax works for NULL as well.
-        foreach ($columns as $each)
-            $tmp[] = "`${each}`=?";
+        foreach ($columns as $col => $val) {
+            $tmp[] = "`${col}`=?";
+        }
         return implode (', ', $tmp);
     }
 
-    public function makeWhereSQL ($where_columns, $conjunction, &$params = array())
-    {
-        if (! in_array (strtoupper ($conjunction), array ('AND', '&&', 'OR', '||', 'XOR')))
-            throw new Yaf_Exception ('conjunction'. $conjunction. 'invalid operator');
-        if (! count ($where_columns))
-            throw new Yaf_Exception ('where_columns must not be empty');
+    public function makeWhereSQL ($where_columns, $conjunction, &$params = array()) {
+        if (! in_array (strtoupper ($conjunction), array ('AND', '&&', 'OR', '||', 'XOR'))) {
+            throw new WSException ('conjunction'. $conjunction. 'invalid operator');
+        }
+        if (! count ($where_columns)) {
+            throw new WSException ('where_columns must not be empty');
+        }
         $params = array();
         $tmp = array();
         foreach ($where_columns as $colName => $colValue)
@@ -190,7 +179,7 @@ class DbClass
 
     public function questionMarks($count) {
         if ($count <= 0) {
-            throw new Yaf_Exception('count must be greater than zero');
+            throw new WSException('count must be greater than zero');
         }
         return implode(', ', array_fill(0, $count, '?'));
     }
@@ -204,7 +193,6 @@ class DbClass
     }
 
     public function getError() {
-        return iconv('gbk', 'utf-8', $this->errMessage);
+        return $this->errMessage;
     }
-
 }

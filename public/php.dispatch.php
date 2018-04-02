@@ -6,25 +6,31 @@
  * Created by PhpStorm.
  */
 
-is_cli() || die('Bad Request');
-array_shift($argv);
-$args = init_argvs($argv);
-
-define('APPLICATION_PATH', dirname(__FILE__));
-$application = new Yaf_Application(APPLICATION_PATH . "/conf/application.ini");
-
-$application->getDispatcher()->dispatch(new Yaf_Request_Simple('CLI', 'Yaf.cli', $args['c'], $args['a'], $args['p']));
 
 function is_cli(){
     return preg_match("/cli/i", php_sapi_name()) ? TRUE : FALSE;
 }
+is_cli() || die('Bad Request');
 
-function init_argvs($args) {
-    $ret = array();
-    $ret['c'] = isset($args[0]) ? $args[0] : 'Index';
-    @array_shift($args);
-    $ret['a'] = isset($args[0]) ? $args[0] : 'Index';
-    @array_shift($args);
-    $ret['p'] = $args;
-    return $ret;
+define('APPLICATION_PATH', dirname(__FILE__) . "/../");
+$application = new Yaf_Application(APPLICATION_PATH . "conf/application.ini");
+
+function dispatch(&$args) {
+    // script name
+    array_shift($args);
+    if (count($args) < 2) {
+        die('Invalid Request');
+    }
+    $route = array(
+        1000 => 'index',
+    );
+    $c = array_shift($args);
+    if (isset($route[$c])) {
+        return $route[$c];
+    } else {
+        die('Invalid Request');
+    }
 }
+
+$application->getDispatcher()->dispatch(new Yaf_Request_Simple('CLI', 'api', dispatch($argv), 'ini', $argv));
+

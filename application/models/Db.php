@@ -9,18 +9,20 @@
 class DbModel extends DbClass
 {
     // table name
-    protected $table = '';
+    public $table = '';
     // primary key
-    protected $pk = 'id';
+    public $pk = 'id';
 
-    public function __construct($confName = 'mysql') {
+    public $confName = 'mysql';
 
-        $conf = Yaf_Application::app()->getConfig()->$confName;
+    public function __construct($confName = '') {
+
+        $confName = empty($confName) ? $this->confName : $confName;
+        $conf = Yaf_Registry::get('config')->$confName;
         parent::__construct($conf->dsn, $conf->username, $conf->password);
 
-        //todo: auto fix table name
         if (empty($this->table)) {
-            $this->table = strtolower(str_replace('Model', '', __CLASS__));
+            $this->table = strtolower(str_replace('Model', '', get_class($this)));
         }
     }
 

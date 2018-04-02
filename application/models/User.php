@@ -6,11 +6,9 @@
  * Time: 12:54
  */
 
-class UserModel extends DbModel
-{
-    public $table = 'user';
+class UserModel extends DbModel {
 
     public function getUserInfo($username) {
-        return $this->getRow("SELECT * FROM {$this->table} WHERE username=?", array($username));
+        return $this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($username));
     }
 }
