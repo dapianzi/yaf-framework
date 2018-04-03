@@ -49,6 +49,7 @@ class AuthModel extends DbModel {
             $sql='select id,parentId,childIds,name,icon,url,param from menu where status=1 AND isMenu=1 and isShow=1 and instr((select authority from role where id='.$roleId.'),id)>0 order by listorder asc;';
         }
         $auth=$this->getAll($sql);
+
         $menu=array();
         foreach ($auth as $rs){
             if($rs['parentId']==0){

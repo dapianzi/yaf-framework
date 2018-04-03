@@ -1104,3 +1104,7 @@ html {
 		display: block
 	}
 }
+.layadmin-content{
+	background: #fff;
+	padding: 15px;
+}
