@@ -37,7 +37,7 @@ class UserModel extends DbModel {
 
     public function getUserRoleStatus($userInfo){
         $roleId=$userInfo['roleId'];
-        $roleStatus=$this->getColumn("SELECT status FROM role WHERE id=?", 0,array($roleId));
+        $roleStatus=$this->getColumn("SELECT status FROM role WHERE id=?",array($roleId));
         return $roleStatus;
     }
 

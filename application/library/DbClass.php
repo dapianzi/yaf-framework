@@ -119,7 +119,7 @@ class DbClass
         return $this->dbLink->rollBack();
     }
 
-    public function getColumn($sql, $col = 0, $param = array()) {
+    public function getColumn($sql, $param = array(),$col = 0) {
         return $this->execute($sql, $param)->fetchColumn($col);
     }
 

@@ -22,8 +22,8 @@ class AuthModel extends DbModel {
         $no_auth_node=$conf->application->no_auth_node;
         $roleId=$userinfo['roleId'];
         if($roleId!=1){
-            $node_id=$this->getColumn("SELECT id FROM menu where url = '".$node."'");
-            $authority=$this->getColumn("SELECT authority FROM role where id = ".$roleId);
+            $node_id=$this->getColumn("SELECT id FROM menu where url = ?",array($node));
+            $authority=$this->getColumn("SELECT authority FROM role where id = ?",array($roleId));
             $authority_arr=explode(',',$authority);
             $no_auth_node_arr=explode(',',$no_auth_node);
             if((is_array($authority_arr)&&in_array($node_id,$authority_arr))||in_array($node,$no_auth_node_arr)){
