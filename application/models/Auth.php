@@ -11,8 +11,29 @@ class AuthModel extends DbModel {
 
     public $confName = 'mysql';
 
+    /**
+     * 判断当前权限
+     * @param array $userinfo
+     * @param string $node
+     * @return bool
+     */
     public function getCurrentAuth($userinfo,$node){
-        $auth=$this->getUserAuth($userinfo);
+        $conf = Yaf_Registry::get('config');
+        $no_auth_node=$conf->application->no_auth_node;
+        $roleId=$userinfo['roleId'];
+        if($roleId!=1){
+            $node_id=$this->getColumn("SELECT id FROM menu where url = '".$node."'");
+            $authority=$this->getColumn("SELECT authority FROM role where id = ".$roleId);
+            $authority_arr=explode(',',$authority);
+            $no_auth_node_arr=explode(',',$no_auth_node);
+            if((is_array($authority_arr)&&in_array($node_id,$authority_arr))||in_array($node,$no_auth_node_arr)){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
     }
 
     /**

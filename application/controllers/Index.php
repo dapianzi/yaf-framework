@@ -15,7 +15,6 @@ class IndexController extends BaseController {
 	public function indexAction() {
         $AuthModel=new AuthModel();
         $menu=$AuthModel->getUserAuth($this->user);
-
 		$this->assign('menu', $menu);
 		$this->assign('unread_messages', 0);
 	}
