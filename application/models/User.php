@@ -8,21 +8,25 @@
 
 class UserModel extends DbModel {
 
-    public function getUserInfo($username) {
-        $user=$this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($username));
+    public function getUserInfo($userinfo) {
+        $user=$this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($userinfo['username']));
         if(empty($user)){
             //添加用户到系统
-            $user=$this->addUser($username);
+            $user=$this->addUser($userinfo);
         }
         return $user;
     }
 
-    public function addUser($username){
-        $id=$this->add(array('name'=>$username));
+    public function addUser($userinfo){
+        $id=$this->add(array('name'=>$userinfo['username'],'nickName'=>$userinfo['cname']));
         if($id){
-            $user=$this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($username));
+            $user=$this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($userinfo['username']));
             return $user;
         }
+    }
+
+    public function getUserAuth($userId){
+
     }
 
 }

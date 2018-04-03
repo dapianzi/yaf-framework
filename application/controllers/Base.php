@@ -29,7 +29,7 @@ class BaseController extends Yaf_Controller_Abstract
         } else {
             $UserModel=new UserModel();
             if(phpCAS::hasAttribute('username')){
-                $userinfo = $UserModel->getUserInfo(phpCAS::getAttribute('username'));
+                $userinfo = $UserModel->getUserInfo(phpCAS::getAttributes());
             }
             if (empty($this->user)) {
                 if ($this->is_ajax) {
@@ -38,6 +38,8 @@ class BaseController extends Yaf_Controller_Abstract
             }
             $this->user = $userinfo;
         }
+
+
         $this->getView()->assign('user', $this->user);
     }
 
