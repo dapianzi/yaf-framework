@@ -59,19 +59,18 @@
           <li class="layui-nav-item" lay-unselect>
             <{if $user}>
             <a href="javascript:;">
-              <cite>贤心</cite>
+              <cite><{$user.name}></cite>
             </a>
             <dl class="layui-nav-child">
               <dd><a lay-href="/index/account/info/" tppabs="/index/account/info/">基本资料</a></dd>
               <dd><a lay-href="/index/account/password/" tppabs="/index/account/password/">修改密码</a></dd>
               <hr>
-              <dd style="text-align: center;"><a href="/index/logout/">退出</a></dd>
+              <dd style="text-align: center;"><a href="/logout/">退出</a></dd>
             </dl>
             <{else}>
             <a href="/index/index/login/">登录</a>
             <{/if}>
           </li>
-          
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
             <a href="javascript:;" ><i class="layui-icon layui-icon-more-vertical"></i></a>
           </li>
