@@ -9,11 +9,11 @@
 class BaseController extends Yaf_Controller_Abstract
 {
     protected $base_uri;
-    protected $auth = FALSE;
 
     public $conf;
     public $is_ajax;
     public $user;
+    public $auth;
 
     public function init() {
         // inti config
@@ -31,17 +31,24 @@ class BaseController extends Yaf_Controller_Abstract
             if(phpCAS::hasAttribute('username')){
                 $userinfo = $UserModel->getUserInfo(phpCAS::getAttributes());
             }
-            if (empty($this->user)) {
-                if ($this->is_ajax) {
-                    Fn::ajaxError('Invalid User. Please login first.');
-                }
+            if (empty($userinfo)) {
+                throw new WSException('Invalid User. Please login first.');
+            }
+            if($userinfo['status']!=1){
+                throw new WSException('当前账户禁止登陆本系统，请联系管理员！');
+            }
+            $UserRoleStatus=$UserModel->getUserRoleStatus($userinfo);
+            if($UserRoleStatus!=1){
+                throw new WSException('当前账户角色禁止登陆本系统，请联系管理员！');
             }
             $this->user = $userinfo;
         }
-
+        //判断用户在当前节点是否有权限
+        //$this->getCurrentAuth($userinfo);
 
         $this->getView()->assign('user', $this->user);
     }
+
 
     /**
      * 重写render方法，自动根据模块加载模板

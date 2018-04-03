@@ -13,9 +13,9 @@ class IndexController extends BaseController {
      * 对于如下的例子, 当访问http://yourhost/sample/index/index/index/name/KF 的时候, 你就会发现不同
      */
 	public function indexAction() {
+        $UserModel=new UserModel();
+        $userInfo=$this->user;
 
-		// test pod class
-		$menu = [];
 
 		$menu = [
 			[
@@ -27,7 +27,7 @@ class IndexController extends BaseController {
 			[
 				'page' =>'系统设置',
 				'icon' => 'set',
-				'auto' => TRUE,
+				'auto' => FALSE,
 				'items' => [
 					'参数设置' => '/index/system/index',
 					'用户列表' => '/index/user/index/',

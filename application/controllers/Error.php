@@ -16,7 +16,7 @@ class ErrorController extends Yaf_Controller_Abstract {
 
 	public function errorAction($exception) {
 		if ($this->getRequest()->isXmlHttpRequest()) {
-			Fn::ajaxError($exception->getMessage());
+			gf_ajax_error($exception->getMessage());
 		}
 		//functionClass::dump(Yaf_Application::$modules);
 		switch($exception->getCode()) {
