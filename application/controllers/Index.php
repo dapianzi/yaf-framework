@@ -13,48 +13,9 @@ class IndexController extends BaseController {
      * 对于如下的例子, 当访问http://yourhost/sample/index/index/index/name/KF 的时候, 你就会发现不同
      */
 	public function indexAction() {
-        $UserModel=new UserModel();
-        $userInfo=$this->user;
+        $AuthModel=new AuthModel();
+        $menu=$AuthModel->getUserAuth($this->user);
 
-
-		$menu = [
-			[
-				'page' =>'控制台',
-				'href' => '/index/index/dashboard/',
-				'icon' => 'home',
-				'items' => FALSE,
-			],
-			[
-				'page' =>'系统设置',
-				'icon' => 'set',
-				'auto' => FALSE,
-				'items' => [
-					'参数设置' => '/index/system/index',
-					'用户列表' => '/index/user/index/',
-					'用户组' => '/index/user/group/',
-					'权限管理' => '/index/user/permission-list/',
-					'菜单管理' => '/index/menu/index/',
-				]
-			],
-			[
-				'page' =>'设备管理',
-			 	'icon' => 'component',
-			 	'auto' => FALSE,
-			 	'items' => [
-					'设备查询' => '/index/object/index/',
-					'设备录入' => '/index/object/add/',
-					'设备变更' => '/index/object/modify/',
-				]
-			],
-			[
-				'page'=>'报表统计',
-				'icon' => 'analysis',
-				'auto' => FALSE,
-			 	'items' => [
-					'设备统计' => '/index/analysis/objects/',
-				]
-			],
-		];
 		$this->assign('menu', $menu);
 		$this->assign('unread_messages', 0);
 	}

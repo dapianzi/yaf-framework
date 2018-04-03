@@ -41,29 +41,5 @@ class UserModel extends DbModel {
         return $roleStatus;
     }
 
-    /**
-     * 获取用户权限
-     * @param int $userId 用户ID
-     * return array
-     */
-    public function getUserAuth($userInfo){
-        $roleId=$userInfo['roleId'];
-        $roleStatus=$this->getColumn("SELECT status FROM role WHERE id=?", 0,array($roleId));
-        if($roleStatus!=1){
-            return array(
-                'roleStatus'=>$roleStatus,
-                'menu'=>''
-            );
-        }
-        if($roleId=1){
-            $sql='';
-        }else{
-            $sql='';
-        }
 
-        return array(
-            'roleStatus'=>$roleStatus,
-            'menu'=>''
-        );
-    }
 }

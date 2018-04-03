@@ -35,20 +35,21 @@ class BaseController extends Yaf_Controller_Abstract
                 throw new WSException('Invalid User. Please login first.');
             }
             if($userinfo['status']!=1){
-                throw new WSException('当前账户禁止登陆本系统，请联系管理员！');
+                throw new WSException('The account is not allowed to login. Please contact the administrator！');
             }
             $UserRoleStatus=$UserModel->getUserRoleStatus($userinfo);
             if($UserRoleStatus!=1){
-                throw new WSException('当前账户角色禁止登陆本系统，请联系管理员！');
+                throw new WSException('The role is not allowed to login. Please contact the administrator！');
             }
             $this->user = $userinfo;
         }
         //判断用户在当前节点是否有权限
-        //$this->getCurrentAuth($userinfo);
+        $AuthModel=new AuthModel();
+        $node=strtolower($this->getRequest()->module.'/'.$this->getRequest()->controller.'/'.$this->getRequest()->action);
+        $AuthModel->getCurrentAuth($userinfo,$node);
 
         $this->getView()->assign('user', $this->user);
     }
-
 
     /**
      * 重写render方法，自动根据模块加载模板
