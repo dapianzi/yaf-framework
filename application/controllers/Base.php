@@ -21,21 +21,22 @@ class BaseController extends Yaf_Controller_Abstract
         $this->conf = $conf;
         $this->base_uri = $conf->application->baseUri;
 
-//        $this->getView()->assign('BASE_URI', $this->base_uri);
-        $_SESSION['user'] = 'dapianzi';
+        $this->getView()->assign('BASE_URI', $this->base_uri);
         // init request mode
         $this->is_ajax = $this->getRequest()->isXmlHttpRequest ();
-        // init user
-        if ($this->auth) {
-            if ( isset($_SESSION['user']) ) {
-                $this->user  = (new UserModel())->getUserInfo($_SESSION['user']);
+        if (!phpCAS::isAuthenticated()) {
+            phpCAS::forceAuthentication();
+        } else {
+            $UserModel=new UserModel();
+            if(phpCAS::hasAttribute('username')){
+                $userinfo = $UserModel->getUserInfo(phpCAS::getAttribute('username'));
             }
             if (empty($this->user)) {
                 if ($this->is_ajax) {
                     Fn::ajaxError('Invalid User. Please login first.');
                 }
-                $this->redirect($this->base_uri . '/login');exit;
             }
+            $this->user = $userinfo;
         }
         $this->getView()->assign('user', $this->user);
     }

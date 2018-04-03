@@ -13,6 +13,7 @@ class IndexController extends BaseController {
      * 对于如下的例子, 当访问http://yourhost/sample/index/index/index/name/KF 的时候, 你就会发现不同
      */
 	public function indexAction() {
+
 		// test pod class
 		$menu = [];
 

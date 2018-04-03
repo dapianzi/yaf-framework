@@ -9,6 +9,20 @@
 class UserModel extends DbModel {
 
     public function getUserInfo($username) {
-        return $this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($username));
+        $user=$this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($username));
+        if(empty($user)){
+            //添加用户到系统
+            $user=$this->addUser($username);
+        }
+        return $user;
     }
+
+    public function addUser($username){
+        $id=$this->add(array('name'=>$username));
+        if($id){
+            $user=$this->getRow("SELECT * FROM {$this->table} WHERE name=?", array($username));
+            return $user;
+        }
+    }
+
 }

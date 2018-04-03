@@ -16,8 +16,9 @@ class Bootstrap extends Yaf_Bootstrap_Abstract{
 
 
 	public function _initSession() {
-		Yaf_Session::getInstance()->start();
-
+        if (!session_id()) {
+            Yaf_Session::getInstance()->start();
+        }
 //		header('content-type:text/html;charset=utf-8');
 	}
 
