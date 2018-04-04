@@ -22,20 +22,21 @@ function gf_safe_input($s) {
 
 }
 
-function gf_ajax_error($err='') {
-    return gf_ajax_return(-1, $err);
+function gf_ajax_error($msg='') {
+    return gf_ajax_return([], -1, $msg);
 }
 
-function gf_ajax_success($data='') {
-    return gf_ajax_return(0, $data);
+function gf_ajax_success($data, $extra=[]) {
+    return gf_ajax_return($data, 0, '', $extra);
 }
 
-function gf_ajax_return($status, $content) {
+function gf_ajax_return($data, $code, $msg, $extra=[]) {
 //    header('Content-Type:application/json; charset=utf-8');
-    return exit(json_encode(array(
-        'status' => $status,
-        'content' => $content
-    )));
+    return exit(json_encode(array_merge(array(
+        'code' => $code,
+        'msg' => $msg,
+        'data' => $data,
+    ), $extra), JSON_UNESCAPED_UNICODE));
 }
 
 /**
