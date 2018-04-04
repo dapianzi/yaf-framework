@@ -34,7 +34,8 @@ class ErrorController extends Yaf_Controller_Abstract {
 			{
 				//404
                 //header("HTTP/1.1 503 Server Error.");
-				header("HTTP/1.1 404 Not Found");
+				//todo debug
+//				header("HTTP/1.1 404 Not Found");
 				break;
 			}
 		}
