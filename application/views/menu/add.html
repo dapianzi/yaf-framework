@@ -1,0 +1,138 @@
+<{extends 'public/base.html'}>
+<{block name=body}>
+<style>
+    .icon .layui-form-radio{
+        padding: 0px;
+        margin: 6px 0px 0 0;
+        display: inline;
+    }
+    .layui-form-radio>i{
+        margin-right:5px;
+    }
+    .mar10{
+        margin-right: 10px;
+        font-size: 20px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">添加新菜单</div>
+        <div class="layui-card-body">
+            <form class="layui-form " onsubmit="return false;" lay-filter="component-form-element">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">上级菜单：</label>
+                    <div class="layui-input-inline">
+                        <select name="parentId" lay-verify="required" lay-search="">
+                            <option value="">直接选择或搜索选择</option>
+                            <option value="0" selected>顶级菜单</option>
+                            <{foreach $menu as $group=>$item}>
+                                <option value="<{$item.id}>"><{$item.name}></option>
+                            <{/foreach}>
+                            </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图标：</label>
+                    <div class="layui-input-block icon" style="width: 500px;">
+                        <input type="radio" name="icon" value="set" ><i class="layui-icon layui-icon-home mar10"></i>
+                        <input type="radio" name="icon" value="auz" ><i class="layui-icon layui-icon-auz mar10"></i>
+                        <input type="radio" name="icon" value="fire" ><i class="layui-icon layui-icon-fire mar10"></i>
+                        <input type="radio" name="icon" value="diamond" ><i class="layui-icon layui-icon-diamond mar10"></i>
+                        <input type="radio" name="icon" value="location" ><i class="layui-icon layui-icon-location mar10"></i>
+                        <input type="radio" name="icon" value="read" ><i class="layui-icon layui-icon-read mar10"></i>
+                        <input type="radio" name="icon" value="survey" ><i class="layui-icon layui-icon-survey mar10"></i>
+                        <input type="radio" name="icon" value="download" ><i class="layui-icon layui-icon-download mar10"></i>
+                        <input type="radio" name="icon" value="component" ><i class="layui-icon layui-icon-component mar10"></i>
+                        <input type="radio" name="icon" value="shezhi1" ><i class="layui-icon layui-icon-shezhi1 mar10"></i>
+                        <input type="radio" name="icon" value="yinqing" ><i class="layui-icon layui-icon-yinqing mar10"></i>
+                        <input type="radio" name="icon" value="star" ><i class="layui-icon layui-icon-star mar10"></i>
+                        <input type="radio" name="icon" value="chat" ><i class="layui-icon layui-icon-chat mar10"></i>
+                        <input type="radio" name="icon" value="list" ><i class="layui-icon layui-icon-list mar10"></i>
+                        <input type="radio" name="icon" value="tubiao" ><i class="layui-icon layui-icon-tubiao mar10"></i>
+                        <input type="radio" name="icon" value="tree" ><i class="layui-icon layui-icon-tree mar10"></i>
+                        <input type="radio" name="icon" value="xuanzemoban48" ><i class="layui-icon layui-icon-xuanzemoban48 mar10"></i>
+                        <input type="radio" name="icon" value="gongju" ><i class="layui-icon layui-icon-gongju mar10"></i>
+                        <input type="radio" name="icon" value="wenjian" ><i class="layui-icon layui-icon-wenjian mar10"></i>
+                        <input type="radio" name="icon" value="layouts" ><i class="layui-icon layui-icon-layouts mar10"></i>
+                        <input type="radio" name="icon" value="user" ><i class="layui-icon layui-icon-user mar10"></i>
+                        <input type="radio" name="icon" value="jilu" ><i class="layui-icon layui-icon-jilu mar10"></i>
+                        <input type="radio" name="icon" value="unlink" ><i class="layui-icon layui-icon-unlink mar10"></i>
+                        <input type="radio" name="icon" value="senior" ><i class="layui-icon layui-icon-senior mar10"></i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">名称：</label>
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <input type="text" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">URL：</label>
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <input type="text" name="url" lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">其他参数：</label>
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <input type="text" name="param" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否菜单</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" checked name="isMenu" lay-skin="switch" lay-filter="switchTest" lay-text="是|否">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否显示</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" checked name="isShow" lay-skin="switch" lay-filter="switchTest" lay-text="是|否">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<{/block}>
+<{block name=script}>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var $ = layui.$;
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        laydate.render({
+            elem: '#date1'
+        });
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            console.log("111111111");
+            $.ajax({
+                type: 'POST',
+                url: '/index/menu/add/',
+                data: JSON.stringify(data.field),
+                dataType:JSON,
+                success: function (res) {
+                    console.log(res)
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<{/block}>
+

@@ -15,7 +15,7 @@ class MenuModel extends DbModel {
      * 获取菜单
      * return array
      */
-    public function getMenu($key){
+    public function getMenu($key=array(),$first=0){
         $where='where status=1 ';
         if(is_array($key)&&count($key)>0){
             foreach ($key as $k=>$value){
@@ -23,6 +23,9 @@ class MenuModel extends DbModel {
                     $where.=' and '.$k.' like "%'.$value.'%"';
                 }
             }
+        }
+        if($first==1){
+            $where.=' and parentId =0';
         }
         $menu_db=$this->getAll('select * from menu '.$where.' order by listorder asc,id asc');
         $count=$this->getColumn('select count(*) from menu '.$where);

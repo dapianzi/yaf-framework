@@ -75,7 +75,7 @@ class MenuController extends BaseController {
             $arr2[]=$tem_rs;
             if(count($rs['items'])>0){
                 foreach($rs['items'] as $key2=>$val){
-                    $val['name']='  -- '.$val['name'];
+                    //$val['name']='  -- '.$val['name'];
                     $arr2[]=$val;
                 }
             }
@@ -163,5 +163,12 @@ class MenuController extends BaseController {
         }
         return gf_ajax_success('修改成功');
 
+    }
+
+    function addAction(){
+        $MenuModel=new MenuModel();
+        $meuninfo=$MenuModel->getMenu(array(),1);
+        $menu_db=$meuninfo['menu'];
+        $this->assign('menu', $menu_db);
     }
 }
