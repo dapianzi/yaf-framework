@@ -8,7 +8,7 @@
  */
 class IndexController extends BaseController {
     function indexAction() {
-        Fn::ajaxSuccess(array(
+        gf_ajax_success(array(
             'controller' => __CLASS__,
             'action' => __METHOD__,
             'params' => $this->getRequest()->getParams(),
@@ -25,7 +25,7 @@ class IndexController extends BaseController {
             default:
                 $r = $this->sayhello($argv);
         }
-        Fn::ajaxSuccess($r);
+        gf_ajax_success($r);
     }
 
     public function sayhello($argv) {

@@ -23,7 +23,7 @@ class ErrorController extends Yaf_Controller_Abstract {
 
 //            case WS_INVALID_ADMIN:
 			case WS_EXCEPTION:{
-				header("HTTP/1.1 404 Not Found");
+//				header("HTTP/1.1 404 Not Found");
 				break;
 			}
 //            case YAF_ERR_LOADFAILD:
