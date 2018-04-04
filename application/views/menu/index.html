@@ -3,11 +3,35 @@
 <{block name=body}>
 <div class="layui-fluid">
     <div class="layadmin-content">
-        <div class="layui-btn-group demoTable">
-            <button class="layui-btn" data-type="getCheckData">获取选中行数据</button>
-            <button class="layui-btn" data-type="getCheckLength">获取选中数目</button>
-            <button class="layui-btn" data-type="isAll">验证是否全选</button>
+
+
+        <div class="dealTable">
+            <div class="layui-inline">
+                <input class="layui-input" name="name" id="name" autocomplete="off" placeholder="节点名称">
+            </div>
+            <button class="layui-btn" data-type="search">搜索</button>
+            <div class="layui-btn-group ">
+                <button class="layui-btn" data-type="getCheckData"><i class="layui-icon">&#xe654;</i>添加新菜单</button>
+                <button class="layui-btn layui-btn-danger" data-type="getCheckLength"><i class="layui-icon">&#xe640;</i>删除所选</button>
+            </div>
         </div>
+        <table class="layui-table" lay-data="{height: 'full-120',cellMinWidth: 80,url:'/index/menu/list/', id:'menu'}" lay-filter="menu">
+            <thead>
+            <tr>
+                <th lay-data="{type:'checkbox',fixed: 'left'}">ID</th>
+                <th lay-data="{field:'id', width:80}">ID</th>
+                <th lay-data="{field:'listorder', width:80, sort: true, edit: 'text'}">排序</th>
+                <th lay-data="{field:'icon',width: 80}">图标</th>
+                <th lay-data="{field:'name',edit: 'text'}">节点名称</th>
+                <th lay-data="{field:'url',edit: 'text'}">地址</th>
+                <th lay-data="{field:'param',edit: 'text'}">参数</th>
+                <th lay-data="{field:'isMenu',width: 100,event: 'isMenu',style:'cursor: pointer;'}">是否菜单</th>
+                <th lay-data="{field:'isShow',width: 100,event: 'isShow',style:'cursor: pointer;'}">是否显示</th>
+                <th lay-data="{field:'right',toolbar: '#barMenu', fixed: 'right'}">操作</th>
+            </tr>
+            </thead>
+        </table>
+
         <table class="layui-hide" id="menu" lay-filter="demo"></table>
     </div>
 </div>
@@ -18,11 +42,11 @@
     layui.use('table', function(){
         var table = layui.table;
         //监听表格复选框选择
-        table.on('checkbox(demo)', function(obj){
+        /*table.on('checkbox(menu)', function(obj){
             console.log(obj)
-        });
+        });*/
         //监听工具条
-        table.on('tool(demo)', function(obj){
+        table.on('tool(menu)', function(obj){
             var data = obj.data;
             if(obj.event === 'detail'){
                 layer.msg('ID：'+ data.id + ' 的查看操作');
@@ -33,54 +57,55 @@
                 });
             } else if(obj.event === 'edit'){
                 layer.alert('编辑行：<br>'+ JSON.stringify(data))
+            }else if(obj.event === 'isMenu'){
+                layer.msg('切换是否菜单')
+            }else if(obj.event === 'isShow'){
+                layer.msg('切换是否显示')
             }
         });
 
         var $ = layui.$, active = {
             getCheckData: function(){ //获取选中数据
-                var checkStatus = table.checkStatus('idTest')
+                var checkStatus = table.checkStatus('menu')
                     ,data = checkStatus.data;
                 layer.alert(JSON.stringify(data));
             }
             ,getCheckLength: function(){ //获取选中数目
-                var checkStatus = table.checkStatus('idTest')
+                var checkStatus = table.checkStatus('menu')
                     ,data = checkStatus.data;
                 layer.msg('选中了：'+ data.length + ' 个');
-            }
-            ,isAll: function(){ //验证是否全选
-                var checkStatus = table.checkStatus('idTest');
-                layer.msg(checkStatus.isAll ? '全选': '未全选')
+            },
+            search: function(){
+                var name = $('#name');
+                //执行重载
+                table.reload('menu', {
+                    where: {
+                        key: {
+                            name: name.val()
+                        }
+                    }
+                });
             }
         };
 
-        $('.demoTable .layui-btn').on('click', function(){
+        $('.dealTable .layui-btn').on('click', function(){
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
 
-        table.render({
-            elem: '#menu'
-            ,url:'/index/menu/list/'
-            ,cellMinWidth: 80
-            ,page:true
-            ,id:'idTest'
-            ,cols: [[
-                {type:'checkbox'}
-                ,{field:'id', title: 'ID'}
-                ,{field:'icon',title: '图标'}
-                ,{field:'name',title: '节点名称',}
-                ,{field:'url', title: '地址',}
-                ,{field:'param', title: '参数',}
-                ,{field:'isMenu',title: '是否菜单'}
-                ,{field:'isShow', title: '是否显示'}
-                ,{field:'status', title: '状态'}
-                ,{fixed:'right', toolbar: '#barDemo'}
-            ]]
+        //监听单元格编辑
+        table.on('edit(menu)', function(obj){
+            console.log(obj);
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
         });
+
+
     });
 </script>
-<script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+<script type="text/html" id="barMenu">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>

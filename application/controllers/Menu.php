@@ -14,8 +14,9 @@ class MenuController extends BaseController {
     function listAction(){
         $page= $this->getQuery('page');
         $limit= $this->getQuery('limit');
+        $key= $this->getQuery('key');
         $MenuModel=new MenuModel();
-        $meun=$MenuModel->getMenu($page,$limit);
+        $meun=$MenuModel->getMenu($key);
         echo json_encode($meun,JSON_UNESCAPED_UNICODE);
         return false;
     }

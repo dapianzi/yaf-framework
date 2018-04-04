@@ -183,6 +183,9 @@ a cite {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale
 }
+.layui-icon-analysis:before{
+	content: '\e62c';
+}
 
 .layui-icon-duihua:before {
 	content: "\e611"
