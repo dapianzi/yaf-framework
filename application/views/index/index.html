@@ -5,6 +5,7 @@
 <{block name=static}>
 <style type="text/css">
   .layui-icon-analysis:before{content: '\e62c';}
+  .layui-icon-tools:before{content: '\e631';}
 </style>
 <{/block}>
 
@@ -80,14 +81,14 @@
       <!-- 侧边菜单 -->
       <div class="layui-side layui-side-menu">
         <div class="layui-side-scroll">
-          <div class="layui-logo" lay-href="test1.htm" tppabs="home/console.html">
-            <span>layuiAdmin</span>
+          <div class="layui-logo" lay-href="/index/index/dashboard/" tppabs="/index/index/dashboard/">
+            <span>稳速综合运维管理平台</span>
           </div>
           
           <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
             <{foreach $menu as $group=>$item}>
             <{if isset($item.items)&&is_array($item.items)}>
-            <li data-name="get" class="layui-nav-item <{if $item.auto}>layui-nav-itemed<{/if}>">
+            <li data-name="get" class="layui-nav-item">
               <a href="javascript:;" lay-tips="<{$item.page}>" lay-direction="2">
                 <i class="layui-icon layui-icon-<{$item.icon}>" ></i>
                 <cite><{$item.page}></cite>

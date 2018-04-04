@@ -1,0 +1,68 @@
+<{extends file='public/base.html'}>
+
+<{block name=title}>模板管理<{/block}>
+
+<{block name=static}><{/block}>
+
+<{block name=body}>
+<div class="layui-fluid">
+    <div class="layadmin-content layui-row layui-col-space15">
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <{foreach $categorys as $c=>$cate}>
+                <li><{$c}></li>
+                <{/foreach}>
+            </ul>
+            <div class="layui-tab-content">
+                <{foreach $categorys as $cate}>
+                <div class="layui-tab-item">
+                    <table class="layui-table" lay-skin="line" lay-size="sm">
+                        <colgroup>
+                            <col width="5%">
+                            <col width="5%">
+                            <col width="15%">
+                            <col width="10%">
+                            <col width="45%">
+                            <col width="20%">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>全选</th>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>模板类型</th>
+                            <th>模板内容</th>
+                            <th>其他信息</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <{foreach $cate as $t}>
+                        <tr>
+                            <td><input type="checkbox" name="template_id[]" value="<{$t.id}>" /></td>
+                            <td><{$t.id}></td>
+                            <td><{$t.name}></td>
+                            <td><{$t.content_type}></td>
+                            <td><{$t.content}></td>
+                            <td><{$t.info}></td>
+                        </tr>
+                        <{/foreach}>
+                        </tbody>
+                    </table>
+
+                </div>
+                <{/foreach}>
+            </div>
+        </div>
+    </div>
+</div>
+<{/block}>
+
+<{block name=script}>
+<script type="application/javascript">
+    layui.use('element', function(){ //加载code模块
+        //layui.code(); //引用code方法
+        var element = layui.element;
+    });
+    var $=layui.$;
+</script>
+<{/block}>

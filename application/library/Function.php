@@ -6,7 +6,7 @@
  * Time: 15:31
  */
 
-
+/** 方便git merge carl **/
 function gf_dump($var) {
     echo '<pre>';
     print_r($var);
@@ -60,4 +60,31 @@ function gf_get_remote_addr() {
     return $cip;
 }
 
+/**
+ *  $data = [
+ *      'op' => 'xxxx',
+ *      'ap' => 'ahrega',
+ *  ];
+ *  $template = "风格{{op}}日哈尔{{ap}}啊然{{op}}后";
+ *
+ *  return 风格xxxx日哈尔ahrega啊然xxxx后
+ *
+ * @param $template
+ * @param $data
+ * @return string
+ */
+function gf_render_template($template, $data) {
+    if (preg_match_all('/\{\{(.*?)\}\}/', $template, $matches)) {
+        foreach ($matches[1] as $m) {
+            $template = str_replace('{{'.$m.'}}', $data[$m], $template);
+        }
+    }
+    return $template;
+}
+
+
+/** 方便git merge danny **/
+
+
+/** 方便git merge sky **/
 

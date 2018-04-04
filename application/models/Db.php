@@ -15,12 +15,12 @@ class DbModel extends DbClass
 
     public $confName = 'mysql';
 
-    public function __construct($confName = '') {
-
-        $confName = empty($confName) ? $this->confName : $confName;
+    public function __construct($table = '') {
+        // 这里初始化传入table名，可以一个数据库Model实例化多个table.
+        $confName = !empty($this->confName) ? $this->confName : 'mysql';
         $conf = Yaf_Registry::get('config')->$confName;
         parent::__construct($conf->dsn, $conf->username, $conf->password);
-
+        $this->table = empty($table) ? $this->table : $table;
         if (empty($this->table)) {
             $this->table = strtolower(str_replace('Model', '', get_class($this)));
         }
