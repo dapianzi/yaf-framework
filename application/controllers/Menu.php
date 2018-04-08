@@ -186,6 +186,7 @@ class MenuController extends BaseController {
                 'isShow'=>$isShow,
             );
             $status=$MenuModel->addMenu($data);
+            $MenuModel->editMenu(array('listorder'=>$status),$status);
             if($status){
                 return gf_ajax_success('添加成功');
             }else{
