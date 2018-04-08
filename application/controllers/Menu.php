@@ -7,6 +7,12 @@
  */
 class MenuController extends BaseController {
 
+    public function init() {
+        parent::init();
+        $menu_icon=array('home','set','auz','fire','diamond','location','read','survey','download','component','shezhi1','yinqing','star','chat','list','tubiao','tree','xuanzemoban48','gongju','wenjian','layouts','user','jilu','unlink','senior');
+        $this->assign('menu_icon', $menu_icon);
+    }
+
     function indexAction(){
 
     }
@@ -167,8 +173,63 @@ class MenuController extends BaseController {
 
     function addAction(){
         $MenuModel=new MenuModel();
-        $meuninfo=$MenuModel->getMenu(array(),1);
-        $menu_db=$meuninfo['menu'];
-        $this->assign('menu', $menu_db);
+        if($this->getRequest()->method=='POST'){
+            $isMenu=$this->getPost('isMenu')=='on'?'1':'0';
+            $isShow=$this->getPost('isShow')=='on'?'1':'0';
+            $data=array(
+                'parentId'=>$this->getPost('isMenu'),
+                'name'=>$this->getPost('name'),
+                'icon'=>$this->getPost('icon'),
+                'url'=>$this->getPost('url'),
+                'param'=>$this->getPost('param'),
+                'isMenu'=>$isMenu,
+                'isShow'=>$isShow,
+            );
+            $status=$MenuModel->addMenu($data);
+            $MenuModel->editMenu(array('listorder'=>$status),$status);
+            if($status){
+                return gf_ajax_success('添加成功');
+            }else{
+                return gf_ajax_error('添加失败');
+            }
+        }else{
+            $meuninfo=$MenuModel->getMenu(array(),1);
+            $menu_db=$meuninfo['menu'];
+            $this->assign('menu', $menu_db);
+        }
+    }
+
+    function editAction(){
+        $MenuModel=new MenuModel();
+        if($this->getRequest()->method=='POST'){
+            $idx=$this->getPost('id');
+            $isMenu=$this->getPost('isMenu')=='on'?'1':'0';
+            $isShow=$this->getPost('isShow')=='on'?'1':'0';
+            $data=array(
+                'parentId'=>$this->getPost('isMenu'),
+                'name'=>$this->getPost('name'),
+                'icon'=>$this->getPost('icon'),
+                'url'=>$this->getPost('url'),
+                'param'=>$this->getPost('param'),
+                'isMenu'=>$isMenu,
+                'isShow'=>$isShow,
+            );
+            $status=$MenuModel->editMenu($data,$idx);
+            if($status){
+                return gf_ajax_success('修改成功');
+            }else{
+                return gf_ajax_error('修改失败');
+            }
+        }else{
+            $id=$this->getQuery('id');
+            if(!$id){
+                throw new WSException('ID参数不存在');
+            }
+            $meuninfo=$MenuModel->getMenu(array(),1);
+            $menu_db=$meuninfo['menu'];
+            $MenuInfo=$MenuModel->getMenuInfo($id);
+            $this->assign('menu', $menu_db);
+            $this->assign('MenuInfo', $MenuInfo);
+        }
     }
 }

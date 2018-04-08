@@ -41,4 +41,38 @@ class MenuModel extends DbModel {
         $status=$this->del($id);
         return $status;
     }
+
+    /**
+     * 增加菜单
+     * @return string
+     */
+    public function addMenu($param=array()){
+        if(count($param)>0){
+            $status=$this->add($param);
+            return $status;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 获取菜单信息
+     * @return string
+     */
+    public function getMenuInfo($id){
+        return $this->get($id);
+    }
+
+    /**
+     * 修改菜单
+     * @return string
+     */
+    public function editMenu($param=array(),$id){
+        if(count($param)>0){
+            $status=$this->edit($id,$param);
+            return $status;
+        }else{
+            return false;
+        }
+    }
 }
