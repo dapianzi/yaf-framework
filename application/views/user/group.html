@@ -1,0 +1,102 @@
+<{extends 'public/base.html'}>
+
+<{block name=body}>
+<div class="layui-fluid">
+    <div class="layadmin-content">
+        <div class="dealTable">
+            <div class="layui-btn-group ">
+                <button class="layui-btn" data-type="add"><i class="layui-icon">&#xe654;</i>添加用户组</button>
+            </div>
+        </div>
+        <table class="layui-table" lay-data="{cellMinWidth: 80,url:'/index/user/grouplist/', id:'group',page: true,limit:15}" lay-filter="group">
+            <thead>
+            <tr>
+                <th lay-data="{field:'id', width:80}">ID</th>
+                <th lay-data="{field:'name',edit: 'text'}">用户组名称</th>
+                <th lay-data="{field:'description',edit: 'text'}">备注</th>
+                <th lay-data="{field:'status',width: 100,templet: '#groupTpl', unresize: true}">状态</th>
+                <th lay-data="{field:'right',toolbar: '#barUserGroup',width: 150, fixed: 'right'}">操作</th>
+            </tr>
+            </thead>
+        </table>
+        <script type="text/html" id="groupTpl">
+            <input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="开启|关闭" lay-filter="status"  {{ d.status == 1 ? 'checked' : '' }} {{ d.id == 1 ? 'disabled' : '' }}>
+        </script>
+
+        <script type="text/html" id="barUserGroup">
+            <a class="layui-btn layui-btn-xs {{ d.id == 1 ? 'layui-btn-disabled' : '' }}" lay-event="{{ d.id == 1 ? '' : 'auth' }}">权限管理</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs {{ d.id == 1 ? 'layui-btn-disabled' : '' }}" lay-event="{{ d.id == 1 ? '' : 'del' }}">删除</a>
+        </script>
+    </div>
+</div>
+<{/block}>
+
+<{block name=script}>
+
+<script>
+    layui.use('table', function(){
+        var table = layui.table
+        ,form = layui.form;
+        //监听是否菜单操作
+        form.on('switch(status)', function(obj){
+            $.getJSON("/index/user/changedata/?type=status&id="+this.value+"&value="+obj.elem.checked, function(data){
+                if(data.code===0){
+                    //layer.msg('切换成功');
+                }else{
+                    layer.msg('切换失败');
+                }
+            });
+        });
+
+        //监听工具条
+        table.on('tool(group)', function(obj){
+            console.log(obj);
+            var data = obj.data;
+            var id=obj.data.id;
+            if(obj.event === 'del'){
+                layer.confirm('确定删除此行么', function(index){
+                    $.getJSON("/index/user/del/?id="+id, function(data){
+                        if(data.code===0){
+                            obj.del();
+                            layer.close(index);
+                        }else{
+                            layer.msg('删除失败');
+                            layer.close(index);
+                        }
+                    });
+                });
+            } else if(obj.event === 'auth'){
+                window.location.href="/index/user/auth/?id="+id;
+            }
+        });
+
+        var $ = layui.$, active = {
+            add: function(){ //获取选中数据
+                window.location.href="/index/user/add/";
+            }
+        };
+
+        $('.dealTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        //监听单元格编辑
+        table.on('edit(group)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            $.getJSON("/index/user/changedata/?type="+field+"&id="+data.id+"&value="+value, function(data){
+                if(data.code===0){
+                    layer.msg('更改成功');
+                }else{
+                    layer.msg('更改失败');
+                }
+            });
+        });
+
+
+    });
+</script>
+<{/block}>
+

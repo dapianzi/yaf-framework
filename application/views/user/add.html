@@ -1,0 +1,81 @@
+<{extends 'public/base.html'}>
+<{block name=body}>
+<style>
+    .icon .layui-form-radio{
+        padding: 0px;
+        margin: 6px 0px 0 0;
+        display: inline;
+    }
+    .layui-form-radio>i{
+        margin-right:5px;
+    }
+    .mar10{
+        margin-right: 10px;
+        font-size: 20px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">添加用户组</div>
+        <div class="layui-card-body">
+            <form class="layui-form " onsubmit="return false;" lay-filter="component-form-element">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">名称：</label>
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <input type="text" name="name" lay-verify="required" title="名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" checked name="status" lay-skin="switch" lay-filter="switchTest" lay-text="开启|关闭">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">描述：</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入内容" name="description" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit="" lay-filter="add">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<{/block}>
+<{block name=script}>
+<script>
+    layui.use(['form'], function(){
+        var $ = layui.$;
+        var form = layui.form
+            ,layer = layui.layer;
+        //监听提交
+        form.on('submit(add)', function(data){
+            $.ajax({
+                type: 'POST',
+                url: '/index/user/add/',
+                data: data.field,
+                success: function (data) {
+                    data=JSON.parse(data);
+                    if(data.code===0){
+                        layer.msg('添加成功',{time: 1000});
+                        window.location.href="/index/user/group/";
+                    }else{
+                        layer.msg('添加失败');
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<{/block}>
+

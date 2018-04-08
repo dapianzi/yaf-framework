@@ -1,0 +1,112 @@
+<{extends 'public/base.html'}>
+<{block name=body}>
+<style>
+    .icon .layui-form-radio{
+        padding: 0px;
+        margin: 6px 0px 0 0;
+        display: inline;
+    }
+    .layui-form-radio>i{
+        margin-right:5px;
+    }
+    .mar10{
+        margin-right: 10px;
+        font-size: 20px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">权限管理</div>
+        <div class="layui-card-body">
+            <form class="layui-form " onsubmit="return false;" lay-filter="component-form-element">
+                <table class="layui-table" lay-filter="auth">
+                    <colgroup>
+                        <col width="150">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th>当前角色</th>
+                        <td>超级管理员</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2"><input type="checkbox" name="" lay-filter="switchTest" title="全选" lay-skin="primary"></th>
+                    </tr>
+                    <{foreach $menu as $k=>$item}>
+                    <tr>
+                        <td><input type="checkbox" name="ids[]" value="<{$item.id}>" data-level="<{$item.level}>" lay-filter="switchTest"  title="<{$item.name}>" lay-skin="primary" ></td>
+                        <td>
+                            <{if isset($item.items)&&is_array($item.items)}>
+                                <{foreach $item.items as $k2=>$item2}>
+                                    <{if isset($item2.items)&&is_array($item2.items)&&count($item2.items)>0}>
+                                        <table class="layui-table level2">
+                                            <thead>
+                                            <tr>
+                                                <th><input type="checkbox" name="ids[]" value="<{$item2.id}>" data-level="<{$item2.level}>" title="<{$item2.name}>" lay-skin="primary" ></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <{foreach $item2.items as $k3=>$item3}>
+                                                    <input type="checkbox" name="ids[]" value="<{$item3.id}>" data-level="<{$item3.level}>" title="<{$item3.name}>" lay-skin="primary" >
+                                                    <{/foreach}>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    <{else}>
+                                        <table class="layui-table level_no_3">
+                                            <tbody>
+                                            <tr>
+                                                <td><input type="checkbox" name="ids[]" value="<{$item2.id}>" data-level="<{$item2.level}>" title="<{$item2.name}>" lay-skin="primary" ></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    <{/if}>
+                                <{/foreach}>
+                            <{else}>
+                            <{/if}>
+                        </td>
+                    </tr>
+                    <{/foreach}>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+<{/block}>
+<{block name=script}>
+<script>
+    layui.use(['form'], function(){
+        var $ = layui.$;
+        var form = layui.form
+            ,layer = layui.layer;
+
+        form.on('checkbox(switchTest)', function(data){
+            console.log(data);
+        });
+        //监听提交
+        form.on('submit(add)', function(data){
+            $.ajax({
+                type: 'POST',
+                url: '/index/user/add/',
+                data: data.field,
+                success: function (data) {
+                    data=JSON.parse(data);
+                    if(data.code===0){
+                        layer.msg('添加成功',{time: 1000});
+                        window.location.href="/index/user/group/";
+                    }else{
+                        layer.msg('添加失败');
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<{/block}>
+
