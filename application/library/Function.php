@@ -84,7 +84,68 @@ function gf_render_template($template, $data) {
 
 
 /** 方便git merge danny **/
-
+/**
+ * http post 请求
+ * @param  [string] $url        [description]
+ * @param  [string] $parameters [description]
+ * @param  array  $headers    [description]
+ * @return [obj]             [description]
+ */
+function gf_http_post($url,$parameters = NULL, $headers = array()){
+    return gf_http($url,'post' ,$parameters , $headers );
+}
+/**
+ * http get 请求
+ * @param  [string] $url        [description]
+ * @param  [string] $parameters [description]
+ * @param  array  $headers    [description]
+ * @return [obj]             [description]
+ */
+function gf_http_get($url, $parameters = NULL,$headers = array()){
+    return gf_http($url,'get' ,$parameters , $headers );
+}
+/**
+ * [gf_http description]
+ * @param  [type] $url        [description]
+ * @param  [type] $method     [description]
+ * @param  [type] $parameters [description]
+ * @param  array  $headers    [description]
+ * @return [type]             [description]
+ */
+function gf_http($url,$method,$parameters = NULL, $headers = array()) {
+    if(empty($url)){return NULL;}
+    $ci = curl_init();
+    /* Curl settings */
+    curl_setopt($ci, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+    curl_setopt($ci, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ci, CURLOPT_TIMEOUT, 3000);  
+    curl_setopt($ci, CURLOPT_HEADER, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查  
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, true);  // 从证书中检查SSL加密算法是否存在 
+    switch (strtolower($method)) {
+        case 'post':
+            curl_setopt($ci, CURLOPT_POST, TRUE);
+            if (!empty($parameters)) {
+                curl_setopt($ci, CURLOPT_POSTFIELDS, $parameters);
+            }
+            break;
+        case 'get':
+         if (!empty($parameters)) {
+            $url .= strpos($url, '?') === false ? '?' : '';  
+            $url .= http_build_query($parameters);  
+        }
+            break;
+        default:
+            # code...
+            break;
+    }
+    curl_setopt($ci, CURLOPT_URL, $url );
+    curl_setopt($ci, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE );
+    $response = curl_exec($ci);
+    curl_close ($ci);
+    return $response;
+}
 
 /** 方便git merge sky **/
 
