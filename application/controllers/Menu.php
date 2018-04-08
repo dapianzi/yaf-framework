@@ -9,7 +9,7 @@ class MenuController extends BaseController {
 
     public function init() {
         parent::init();
-        $menu_icon=array('home','set','auz','fire','diamond','location','read','survey','download','component','shezhi1','yinqing','star','chat','list','tubiao','tree','xuanzemoban48','gongju','wenjian','layouts','user','jilu','unlink','senior');
+        $menu_icon=array('home','set','auz','fire','diamond','location','read','survey','download','component','shezhi1','yinqing','star','chat','list','tubiao','tree','xuanzemoban48','gongju','wenjian','layouts','user','jilu','unlink','senior','tools');
         $this->assign('menu_icon', $menu_icon);
     }
 
@@ -18,64 +18,67 @@ class MenuController extends BaseController {
     }
 
     function listAction(){
-        $page= $this->getQuery('page');
-        $limit= $this->getQuery('limit');
-        $key= $this->getQuery('key','');
-        $MenuModel=new MenuModel();
-        $meuninfo=$MenuModel->getMenu($key);
-        $count=$meuninfo['count'];
-        $menu_db=$meuninfo['menu'];
-        $menu=array();
-        if($count<=0){
-            return gf_ajax_error('无菜单');
-        }
-        foreach ($menu_db as $rs){
-            //$isMenu=$rs['isMenu']==1?'<i class="layui-icon" style="font-size: 20px; color: #5FB878;">&#x1005;</i>':'<i class="layui-icon" style="font-size: 20px; color: #FF5722;">&#x1007;</i>';
-            //$isShow=$rs['isShow']==1?'<i class="layui-icon" style="font-size: 20px; color: #5FB878;">&#x1005;</i>':'<i class="layui-icon" style="font-size: 20px; color: #FF5722;">&#x1007;</i>';
-            //$status=$rs['status']==1?'<i class="layui-icon" style="font-size: 20px; color: #5FB878;">&#x1005;</i>':'<i class="layui-icon" style="font-size: 20px; color: #FF5722;">&#x1007;</i>';
-            if($rs['parentId']==0){
-                $menu[$rs['id']]=array(
-                    'id'=>$rs['id'],
-                    'listorder'=>$rs['listorder'],
-                    'icon'=>'<i class="layui-icon layui-icon-'.$rs['icon'].'"></i>',
-                    'name'=>$rs['name'],
-                    'trname'=>$rs['name'],
-                    'url'=>$rs['url'],
-                    'param'=>$rs['param'],
-                    'isMenu'=>$rs['isMenu'],
-                    'isShow'=>$rs['isShow'],
-                    'status'=>$rs['status'],
-                    'parentId'=>$rs['parentId'],
-                    'items'=>array(),
-                );
-            }else{
-                $menu[$rs['parentId']]['items'][$rs['id']]=array(
-                    'id'=>$rs['id'],
-                    'listorder'=>$rs['listorder'],
-                    'icon'=>'<i class="layui-icon layui-icon-'.$rs['icon'].'"></i>',
-                    'name'=>" ├ ".$rs['name'],
-                    'trname'=>$rs['name'],
-                    'url'=>$rs['url'],
-                    'param'=>$rs['param'],
-                    'isMenu'=>$rs['isMenu'],
-                    'isShow'=>$rs['isShow'],
-                    'status'=>$rs['status'],
-                    'parentId'=>$rs['parentId'],
-                );
-            }
-        }
-        $menu=$this->get_tree($menu);
+        $menu=$this->get_tree(0,'1,2,3');
         if(count($menu)<=0){
             return gf_ajax_error('无菜单');
         }
-        return gf_ajax_success($menu,array('count'=>$count));
+        return gf_ajax_success($menu,array('count'=>'1'));
+    }
+
+    function get_chlid_tree($parentId,$level){
+        $MenuModel=new MenuModel();
+        $meuninfo=$MenuModel->getMenu($parentId,$level);
+        $menu=array();
+        foreach ($meuninfo as $rs){
+            if($rs['level']==1){
+                $name=$rs['name'];
+            }elseif($rs['level']==2){
+                $name=' &nbsp;├ '.$rs['name'];
+            }elseif($rs['level']==3){
+                $name=' &nbsp;&nbsp;&nbsp;&nbsp;├ '.$rs['name'];
+            }
+            $menu_tmp=array(
+                'id'=>$rs['id'],
+                'listorder'=>$rs['listorder'],
+                'icon'=>'<i class="layui-icon layui-icon-'.$rs['icon'].'"></i>',
+                'name'=>$name,
+                'trname'=>$rs['name'],
+                'url'=>$rs['url'],
+                'param'=>$rs['param'],
+                'isMenu'=>$rs['isMenu'],
+                'isShow'=>$rs['isShow'],
+                'status'=>$rs['status'],
+                'parentId'=>$rs['parentId'],
+                'level'=>$rs['level'],
+                'items'=>array()
+            );
+
+            if($rs['level']==1){
+                $menu[$rs['id']]=$menu_tmp;
+            }elseif($rs['level']==2){
+                $menu[$rs['parentId']]['items'][$rs['id']]=$menu_tmp;
+            }elseif($rs['level']==3){
+                $menu_tmp_level2=$this->get3level_parentId($meuninfo,$rs['parentId']);
+                $menu[$menu_tmp_level2['parentId']]['items'][$rs['parentId']]['items'][$rs['id']]=$menu_tmp;
+            }
+        }
+        return $menu;
+    }
+
+    function get3level_parentId($meuninfo,$parentId){
+        foreach ($meuninfo as $rs){
+            if($parentId==$rs['id']){
+                return $rs;
+            }
+        }
     }
 
     /**
      * 将菜单生成层级结构
      * @param $menu
      */
-    function get_tree($menu){
+    function get_tree($parentId=0,$level=1){
+        $menu=$this->get_chlid_tree($parentId,$level);
         $arr2=array();
         foreach ($menu as $key=>$rs){
             $tem_rs=$rs;
@@ -83,8 +86,16 @@ class MenuController extends BaseController {
             $arr2[]=$tem_rs;
             if(count($rs['items'])>0){
                 foreach($rs['items'] as $key2=>$val){
-                    //$val['name']='  -- '.$val['name'];
-                    $arr2[]=$val;
+                    $tem_rs=$val;
+                    unset($tem_rs['items']);
+                    $arr2[]=$tem_rs;
+                    if(count($val['items'])>0){
+                        foreach($val['items'] as $key2=>$val2){
+                            //$val['name']='  -- '.$val['name'];
+                            unset($val['items']);
+                            $arr2[]=$val2;
+                        }
+                    }
                 }
             }
         }
@@ -143,10 +154,12 @@ class MenuController extends BaseController {
     function getTrueName($id){
         $MenuModel=new MenuModel();
         $MenuInfo=$MenuModel->getMenuInfo($id);
-        if($MenuInfo['parentId']!=0){
-            $name=" ├ ".$MenuInfo['name'];
-        }else{
+        if($MenuInfo['level']==1){
             $name=$MenuInfo['name'];
+        }elseif($MenuInfo['level']==2){
+            $name=' &nbsp;├ '.$MenuInfo['name'];
+        }elseif($MenuInfo['level']==3){
+            $name=' &nbsp;&nbsp;&nbsp;&nbsp;├ '.$MenuInfo['name'];
         }
         return array('name'=>$name,'trname'=>$MenuInfo['name']);
     }
@@ -193,14 +206,20 @@ class MenuController extends BaseController {
         if($this->getRequest()->method=='POST'){
             $isMenu=$this->getPost('isMenu')=='on'?'1':'0';
             $isShow=$this->getPost('isShow')=='on'?'1':'0';
+            if($this->getPost('parentId')!=0){
+                $level=$MenuModel->get_level($this->getPost('parentId'));
+            }else{
+                $level=1;
+            }
             $data=array(
-                'parentId'=>$this->getPost('isMenu'),
+                'parentId'=>$this->getPost('parentId'),
                 'name'=>$this->getPost('name'),
                 'icon'=>$this->getPost('icon'),
                 'url'=>$this->getPost('url'),
                 'param'=>$this->getPost('param'),
                 'isMenu'=>$isMenu,
                 'isShow'=>$isShow,
+                'level'=>$level
             );
             $status=$MenuModel->addMenu($data);
             $MenuModel->editMenu(array('listorder'=>$status),$status);
@@ -210,11 +229,12 @@ class MenuController extends BaseController {
                 return gf_ajax_error('添加失败');
             }
         }else{
-            $meuninfo=$MenuModel->getMenu(array(),1);
-            $menu_db=$meuninfo['menu'];
-            $this->assign('menu', $menu_db);
+            $meuninfo=$this->get_tree('','1,2');
+            $this->assign('menu', $meuninfo);
         }
     }
+
+
 
     function editAction(){
         $MenuModel=new MenuModel();
@@ -222,14 +242,20 @@ class MenuController extends BaseController {
             $idx=$this->getPost('id');
             $isMenu=$this->getPost('isMenu')=='on'?'1':'0';
             $isShow=$this->getPost('isShow')=='on'?'1':'0';
+            if($this->getPost('parentId')!=0){
+                $level=$MenuModel->get_level($this->getPost('parentId'));
+            }else{
+                $level=1;
+            }
             $data=array(
-                'parentId'=>$this->getPost('isMenu'),
+                'parentId'=>$this->getPost('parentId'),
                 'name'=>$this->getPost('name'),
                 'icon'=>$this->getPost('icon'),
                 'url'=>$this->getPost('url'),
                 'param'=>$this->getPost('param'),
                 'isMenu'=>$isMenu,
                 'isShow'=>$isShow,
+                'level'=>$level
             );
             $status=$MenuModel->editMenu($data,$idx);
             if($status){
@@ -242,10 +268,9 @@ class MenuController extends BaseController {
             if(!$id){
                 throw new WSException('ID参数不存在');
             }
-            $meuninfo=$MenuModel->getMenu(array(),1);
-            $menu_db=$meuninfo['menu'];
+            $meuninfo=$this->get_tree('','1,2');
             $MenuInfo=$MenuModel->getMenuInfo($id);
-            $this->assign('menu', $menu_db);
+            $this->assign('menu', $meuninfo);
             $this->assign('MenuInfo', $MenuInfo);
         }
     }

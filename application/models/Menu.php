@@ -15,21 +15,16 @@ class MenuModel extends DbModel {
      * 获取菜单
      * return array
      */
-    public function getMenu($key=array(),$first=0){
-        $where='where status=1 ';
-        if(is_array($key)&&count($key)>0){
-            foreach ($key as $k=>$value){
-                if($value!=''){
-                    $where.=' and '.$k.' like "%'.$value.'%"';
-                }
-            }
+    public function getMenu($parentId='',$level="1"){
+        $where='where status=1';
+        if($parentId!=''){
+            $where.=' and parentId='.$parentId;
         }
-        if($first==1){
-            $where.=' and parentId =0';
+        if($level!=''){
+            $where.=' and level in ('.$level.')';
         }
-        $menu_db=$this->getAll('select * from menu '.$where.' order by listorder asc,id asc');
-        $count=$this->getColumn('select count(*) from menu '.$where);
-        return array('count'=>$count,'menu'=>$menu_db);
+        $menu_db=$this->getAll('select * from menu '.$where.' order by level asc,listorder asc');
+        return $menu_db;
     }
 
     public function changeMenuValue($field,$id,$value){
@@ -40,6 +35,11 @@ class MenuModel extends DbModel {
     public function delMenu($id){
         $status=$this->del($id);
         return $status;
+    }
+
+    public function get_level($id){
+        $level=$this->getColumn('select level from menu where id='.$id);
+        return $level+1;
     }
 
     /**

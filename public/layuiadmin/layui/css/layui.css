@@ -482,7 +482,7 @@ a cite {
 .layui-icon-unlink:before {
 	content: "\e64d"
 }
-
+.layui-icon-tools:before{content: '\e631';}
 .layui-icon-bianjiwenzi:before {
 	content: "\e639"
 }
