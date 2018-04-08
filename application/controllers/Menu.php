@@ -20,7 +20,7 @@ class MenuController extends BaseController {
     function listAction(){
         $page= $this->getQuery('page');
         $limit= $this->getQuery('limit');
-        $key= $this->getQuery('key');
+        $key= $this->getQuery('key','');
         $MenuModel=new MenuModel();
         $meuninfo=$MenuModel->getMenu($key);
         $count=$meuninfo['count'];
@@ -39,6 +39,7 @@ class MenuController extends BaseController {
                     'listorder'=>$rs['listorder'],
                     'icon'=>'<i class="layui-icon layui-icon-'.$rs['icon'].'"></i>',
                     'name'=>$rs['name'],
+                    'trname'=>$rs['name'],
                     'url'=>$rs['url'],
                     'param'=>$rs['param'],
                     'isMenu'=>$rs['isMenu'],
@@ -52,7 +53,8 @@ class MenuController extends BaseController {
                     'id'=>$rs['id'],
                     'listorder'=>$rs['listorder'],
                     'icon'=>'<i class="layui-icon layui-icon-'.$rs['icon'].'"></i>',
-                    'name'=>$rs['name'],
+                    'name'=>" ├ ".$rs['name'],
+                    'trname'=>$rs['name'],
                     'url'=>$rs['url'],
                     'param'=>$rs['param'],
                     'isMenu'=>$rs['isMenu'],
@@ -121,17 +123,32 @@ class MenuController extends BaseController {
         $type= $this->getQuery('type');
         $id= $this->getQuery('id');
         $value= $this->getQuery('value');
+        $isName= $this->getQuery('isName',0);
         if(!$type||!$id){
             return gf_ajax_error('参数错误');
         }
         $MenuModel=new MenuModel();
-
         $status=$MenuModel->changeMenuValue($type,$id,$value);
         if($status){
-            return gf_ajax_success('修改成功');
+            $name='';
+            if($isName==1){
+                $name=$this->getTrueName($id);
+            }
+            return gf_ajax_success('修改成功',array('name'=>$name));
         }else{
             return gf_ajax_error('修改失败');
         }
+    }
+
+    function getTrueName($id){
+        $MenuModel=new MenuModel();
+        $MenuInfo=$MenuModel->getMenuInfo($id);
+        if($MenuInfo['parentId']!=0){
+            $name=" ├ ".$MenuInfo['name'];
+        }else{
+            $name=$MenuInfo['name'];
+        }
+        return array('name'=>$name,'trname'=>$MenuInfo['name']);
     }
 
     /**

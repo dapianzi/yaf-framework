@@ -15,14 +15,14 @@
                 <button class="layui-btn layui-btn-danger" data-type="delete"><i class="layui-icon">&#xe640;</i>删除所选</button>
             </div>
         </div>
-        <table class="layui-table" lay-data="{height: 'full-120',cellMinWidth: 80,url:'/index/menu/list/', id:'menu'}" lay-filter="menu">
+        <table class="layui-table" lay-data="{height: 'full-120',cellMinWidth: 80,url:'/index/menu/list/', id:'menu',skin:'line'}" lay-filter="menu">
             <thead>
             <tr>
                 <th lay-data="{type:'checkbox',fixed: 'left'}">ID</th>
                 <th lay-data="{field:'id', width:80}">ID</th>
                 <th lay-data="{field:'listorder', width:80, sort: true, edit: 'text'}">排序</th>
                 <th lay-data="{field:'icon',width: 80}">图标</th>
-                <th lay-data="{field:'name',edit: 'text'}">节点名称</th>
+                <th lay-data="{field:'name',event: 'setName', style:'cursor: pointer;'}">节点名称</th>
                 <th lay-data="{field:'url',edit: 'text'}">地址</th>
                 <th lay-data="{field:'param',edit: 'text'}">参数</th>
                 <th lay-data="{field:'isMenu',width: 100,templet: '#menuTpl', unresize: true}">是否菜单</th>
@@ -94,6 +94,24 @@
                 });
             } else if(obj.event === 'edit'){
                 window.location.href="/index/menu/edit/?id="+id;
+            }else if(obj.event === 'setName'){
+                layer.prompt({
+                    formType: 2
+                    ,title: '修改 ID 为 ['+ data.id +'] 的节点名称'
+                    ,value: data.trname
+                }, function(value, index){
+                    layer.close(index);
+                    $.getJSON("/index/menu/changedata/?type=name&isName=1&id="+data.id+"&value="+value, function(data){
+                        if(data.code===0){
+                            //layer.msg('更改成功');
+                            //同步更新表格和缓存对应的值
+                            obj.update({
+                                name: data.name.name,
+                                trname: data.name.trname
+                            });
+                        }
+                    });
+                });
             }
         });
 
