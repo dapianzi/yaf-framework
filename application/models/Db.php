@@ -30,11 +30,36 @@ class DbModel extends DbClass
         return $this->getRow("SELECT * FROM {$this->table} WHERE {$this->pk}=?", array($id));
     }
 
+    /**
+     * @param string $col
+     * @param string $table
+     * 查询表的字段
+     * @return mixed
+     */
+    public function getColInfo($col, $table='') {
+        if (empty($table)) {
+            $table = $this->table;
+        }
+        return $this->getRow("SHOW COLUMNS FROM {$table} WHERE FIELD LIKE ?", array($col));
+    }
+
+    /**
+     * @param string $col
+     * @param string $table
+     * 快速获取枚举类型列表
+     * @return array
+     */
+    public function getColEnum($col, $table='') {
+        $col_info = $this->getColInfo($col, $table);
+        $enum = explode(',', preg_replace('/^enum\((.*)\)$/i', '$1', $col_info['Type']));
+        return array_map(function($v){return trim($v, '\'');}, $enum);
+    }
+
     public function add($data) {
         return $this->insert($this->table, $data);
     }
 
-    public function edit($id, $data) {
+    public function mod($id, $data) {
         return $this->update($this->table, $data, array($this->pk => $id));
     }
 

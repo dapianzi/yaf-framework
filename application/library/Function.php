@@ -31,7 +31,7 @@ function gf_ajax_success($data, $extra=[]) {
 }
 
 function gf_ajax_return($data, $code, $msg, $extra=[]) {
-//    header('Content-Type:application/json; charset=utf-8');
+    header('Content-Type:application/json; charset=utf-8');
     return exit(json_encode(array_merge(array(
         'code' => $code,
         'msg' => $msg,
@@ -76,6 +76,9 @@ function gf_get_remote_addr() {
 function gf_render_template($template, $data) {
     if (preg_match_all('/\{\{(.*?)\}\}/', $template, $matches)) {
         foreach ($matches[1] as $m) {
+            if (!isset($data[$m])) {
+                throw new WSException('模板变量{{'.$m.'}}缺失');
+            }
             $template = str_replace('{{'.$m.'}}', $data[$m], $template);
         }
     }
@@ -118,10 +121,10 @@ function gf_http($url,$method,$parameters = NULL, $headers = array()) {
     /* Curl settings */
     curl_setopt($ci, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
     curl_setopt($ci, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ci, CURLOPT_TIMEOUT, 3000);  
+    curl_setopt($ci, CURLOPT_TIMEOUT, 3000);
     curl_setopt($ci, CURLOPT_HEADER, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查  
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, true);  // 从证书中检查SSL加密算法是否存在 
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, true);  // 从证书中检查SSL加密算法是否存在
     switch (strtolower($method)) {
         case 'post':
             curl_setopt($ci, CURLOPT_POST, TRUE);
@@ -131,8 +134,8 @@ function gf_http($url,$method,$parameters = NULL, $headers = array()) {
             break;
         case 'get':
          if (!empty($parameters)) {
-            $url .= strpos($url, '?') === false ? '?' : '';  
-            $url .= http_build_query($parameters);  
+            $url .= strpos($url, '?') === false ? '?' : '';
+            $url .= http_build_query($parameters);
         }
             break;
         default:

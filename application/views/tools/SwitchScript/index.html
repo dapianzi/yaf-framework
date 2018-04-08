@@ -45,6 +45,9 @@
             <fieldset class="layui-elem-field layui-field-title site-title">
                 <legend>交换机脚本</legend>
             </fieldset>
+            <{if isset($template_err)}>
+            <p style="color:#FF5722;"><i class="layui-icon layui-icon-close-fill"></i> <span><{$template_err}></span></p>
+            <{/if}>
             <{if isset($switch_script)}><pre class="layui-code"><{$switch_script}></pre><{/if}>
         </div>
 
@@ -55,7 +58,11 @@
 <{block name=script}>
 <script type="application/javascript">
     layui.use('code', function(){ //加载code模块
-        layui.code(); //引用code方法
+        layui.code({
+            title: '脚本内容'
+            ,about: false
+//            ,encode: true //html转码交给服务端
+        }); //引用code方法
     });
     var $=layui.$;
 </script>

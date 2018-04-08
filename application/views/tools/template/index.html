@@ -7,50 +7,63 @@
 <{block name=body}>
 <div class="layui-fluid">
     <div class="layadmin-content layui-row layui-col-space15">
-        <div class="layui-tab">
+        <div class="layui-tab" lay-filter="template">
             <ul class="layui-tab-title">
-                <{foreach $categorys as $c=>$cate}>
-                <li><{$c}></li>
+                <{foreach $result as $c=>$cc}>
+                <li <{if $cc@index eq 0}>class="layui-this"<{/if}> lay-id="cate<{$cc@index}>" ><a href="#cate<{$cc@index}>"><{$c}></a></li>
                 <{/foreach}>
             </ul>
             <div class="layui-tab-content">
-                <{foreach $categorys as $cate}>
-                <div class="layui-tab-item">
-                    <table class="layui-table" lay-skin="line" lay-size="sm">
+                <{foreach $result as $cate}>
+                <div class="layui-tab-item <{if $cate@index eq 0}>layui-show<{/if}>">
+                    <table class="layui-table" lay-size="sm">
                         <colgroup>
-                            <col width="5%">
-                            <col width="5%">
+                            <col width="4%">
+                            <!--<col width="5%">-->
                             <col width="15%">
-                            <col width="10%">
+                            <col width="6%">
                             <col width="45%">
                             <col width="20%">
+                            <col width="10%">
                         </colgroup>
                         <thead>
                         <tr>
-                            <th>全选</th>
-                            <th>ID</th>
+                            <th><input type="checkbox" name="checkall" />全选</th>
+                            <!--<th>ID</th>-->
                             <th>名称</th>
                             <th>模板类型</th>
                             <th>模板内容</th>
                             <th>其他信息</th>
+                            <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
                         <{foreach $cate as $t}>
-                        <tr>
-                            <td><input type="checkbox" name="template_id[]" value="<{$t.id}>" /></td>
-                            <td><{$t.id}></td>
+                        <tr data-idx="<{$t.id}>">
+                            <td><input type="checkbox" name="tid[]" value="<{$t.id}>" /></td>
+                            <!--<td><{$t.id}></td>-->
                             <td><{$t.name}></td>
                             <td><{$t.content_type}></td>
-                            <td><{$t.content}></td>
-                            <td><{$t.info}></td>
+                            <td>
+                                <pre style="color:#393D49;font-family: Lucida Console;"><{$t.format_content}></pre>
+                            </td>
+                            <td><{$t.creator}> 创建于 <{$t.create_time}><br /><{$t.modifier}> 最后修改 于<{$t.modify_time}></td>
+                            <td>
+                                <a class="layui-btn layui-btn-xs" data-role="edit">编辑</a>
+                                <a class="layui-btn layui-btn-danger layui-btn-xs" data-role="del">删除</a>
+                            </td>
                         </tr>
                         <{/foreach}>
                         </tbody>
                     </table>
-
                 </div>
                 <{/foreach}>
+            </div>
+        </div>
+        <div class="dealTable">
+            <div class="layui-btn-group ">
+                <button class="layui-btn layui-btn-sm" data-role="add"><i class="layui-icon layui-icon-tianjia2"></i>添加新模板</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger" data-role="dels"><i class="layui-icon layui-icon-delete"></i>删除所选</button>
             </div>
         </div>
     </div>
@@ -59,10 +72,53 @@
 
 <{block name=script}>
 <script type="application/javascript">
-    layui.use('element', function(){ //加载code模块
+    var categorys = <{$category|json_encode}>;
+    var content_type = <{$content_type|json_encode}>;
+    layui.use(['element', 'form', 'comm'], function(){ //加载code模块
         //layui.code(); //引用code方法
-        var element = layui.element;
+        var $ = layui.$
+                ,comm = layui.comm
+                ,form = layui.form
+                ,element = layui.element;
+        var js_template = {
+            action_add: function(e) {
+
+            },
+            action_edit: function(e) {
+
+            },
+            action_del: function(e) {
+                comm.ajax('/tools/template/del/', {id: $(this).parents('tr').data('idx')}, function(){location.reload();});
+            },
+            action_dels: function(e) {
+                // current tab
+                var ids=[],chk = $('.layui-tab-item.layui-show input[name="tid[]"]:checked');
+                for (var i=0; i<chk.length; i++) {
+                    ids.push($(chk[i]).val());
+                }
+                if (ids && ids.length > 0) {
+                    comm.ajax('/tools/template/del/', {id: ids}, function(){location.reload();});
+                }
+            }
+        };
+        // 初始化选项卡
+        var curr_tab = location.hash.replace(/^#/, '');
+        if (curr_tab) {
+            element.tabChange('template', curr_tab);
+        }
+        // 绑定全选
+        $('.layui-table').each(function(){
+            var $all = $(this).find('input[name="checkall"]')
+                ,$chks = $(this).find('input[name="tid[]"]');
+            comm.check_all($all, $chks);
+        });
+        // 绑定事件
+        $('.layui-btn').on('click', function(e) {
+            var role = 'action_' + $(this).data('role');
+            if (js_template[role]) {
+                js_template[role].call(this, e);
+            }
+        });
     });
-    var $=layui.$;
 </script>
 <{/block}>
