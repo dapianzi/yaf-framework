@@ -19,13 +19,13 @@
                 <div class="layui-tab-item <{if $cate@index eq 0}>layui-show<{/if}>">
                     <table class="layui-table" lay-size="sm">
                         <colgroup>
-                            <col width="6%">
+                            <col width="120px">
                             <!--<col width="5%">-->
-                            <col width="16%">
-                            <col width="8%">
-                            <col width="40%">
-                            <col width="20%">
-                            <col width="10%">
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
                         </colgroup>
                         <thead>
                         <tr>
@@ -137,8 +137,9 @@
                 });
             },
             action_del: function(e) {
+                var _id = $(this).parents('tr').data('idx');
                 comm.confirm('删除这个模板？', function(){
-                    comm.ajax('/tools/template/del/', {id: $(this).parents('tr').data('idx')}, function(){location.reload();});
+                    comm.ajax('/tools/template/del/', {id: _id}, function(){location.reload();});
                 });
             },
             action_dels: function(e) {

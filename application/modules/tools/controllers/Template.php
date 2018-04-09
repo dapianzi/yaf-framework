@@ -82,7 +82,6 @@ class TemplateController extends BaseController {
             $model->add($data);
             gf_ajax_success($model->getLastInsertId());
         }
-
     }
 
     public function getAction() {
