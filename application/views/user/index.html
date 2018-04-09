@@ -1,0 +1,58 @@
+<{extends 'public/base.html'}>
+
+<{block name=body}>
+<div class="layui-fluid">
+    <div class="layadmin-content">
+        <table class="layui-table" lay-data="{cellMinWidth: 80,url:'/index/user/userlist/', id:'group',page: true,limit:15}" lay-filter="user">
+            <thead>
+            <tr>
+                <th lay-data="{field:'id', width:80}">ID</th>
+                <th lay-data="{field:'name'}">用户名</th>
+                <th lay-data="{field:'nickName'}">昵称</th>
+                <th lay-data="{field:'roleName',edit: 'text'}">所属角色</th>
+                <th lay-data="{field:'status',width: 100,templet: '#groupTpl', unresize: true}">状态</th>
+            </tr>
+            </thead>
+        </table>
+        <script type="text/html" id="groupTpl">
+            <input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="开启|关闭" lay-filter="status"  {{ d.status == 1 ? 'checked' : '' }} >
+        </script>
+    </div>
+</div>
+<{/block}>
+
+<{block name=script}>
+
+<script>
+    layui.use('table', function(){
+        var $ = layui.$;
+        var table = layui.table
+        ,form = layui.form;
+        //监听是否菜单操作
+        form.on('switch(status)', function(obj){
+            $.getJSON("/index/user/changeuserdata/?type=status&id="+this.value+"&value="+obj.elem.checked, function(data){
+                if(data.code===0){
+                    //layer.msg('切换成功');
+                }else{
+                    layer.msg('切换失败');
+                }
+            });
+        });
+        //监听单元格编辑
+        table.on('edit(user)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+            $.getJSON("/index/user/changerole/?id="+data.id+"&value="+value, function(data){
+                if(data.code===0){
+                    layer.msg('更改成功');
+                }else{
+                    layer.msg('更改失败');
+                }
+            });
+            /* console.log(obj);
+             layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);*/
+        });
+    });
+</script>
+<{/block}>
+

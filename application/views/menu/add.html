@@ -94,7 +94,6 @@
                 url: '/index/menu/add/',
                 data: data.field,
                 success: function (data) {
-                    data=JSON.parse(data);
                     if(data.code===0){
                         layer.msg('添加成功',{time: 1000});
                         window.location.href="/index/menu/index/";
