@@ -47,6 +47,7 @@ class BaseController extends Yaf_Controller_Abstract
         $AuthModel=new AuthModel();
         $node=strtolower('/'.$this->getRequest()->module.'/'.$this->getRequest()->controller.'/'.$this->getRequest()->action.'/');
         $AUTH=$AuthModel->getCurrentAuth($userinfo,$node);
+
         if(!$AUTH){
             throw new WSException('No authority. Please contact administrator！');
         }

@@ -11,7 +11,9 @@ class UserController extends BaseController {
 
     }
     public function indexAction(){
-
+        $RoleModel=new RoleModel();
+        $UserGroup=$RoleModel->getUserGroup(0,0,0);
+        $this->assign('UserGroup',$UserGroup);
     }
 
     public function userlistAction(){
@@ -48,7 +50,7 @@ class UserController extends BaseController {
             return gf_ajax_error('参数错误');
         }
         $RoleModel=new RoleModel();
-        $status=$RoleModel->changeUserRoleValue($id,$value);
+        $status=$RoleModel->changeUserValue('roleId',$id,$value);
         if($status){
             return gf_ajax_success('修改成功');
         }else{
