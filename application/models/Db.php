@@ -59,6 +59,10 @@ class DbModel extends DbClass
         return $this->insert($this->table, $data);
     }
 
+    public function edit($id, $data){
+        return $this->mod($id, $data);
+    }
+
     public function mod($id, $data) {
         return $this->update($this->table, $data, array($this->pk => $id));
     }

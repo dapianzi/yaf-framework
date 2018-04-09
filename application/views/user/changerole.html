@@ -1,0 +1,86 @@
+<{extends 'public/base.html'}>
+
+<{block name=body}>
+<div class="layui-fluid">
+    <div class="layadmin-content">
+        <form class="layui-form " onsubmit="return false;" lay-filter="component-form-element">
+                <div class="layui-form-item" style="padding-top: 30px;">
+                    <label class="layui-form-label">角色：</label>
+                    <div class="layui-input-block">
+                        <{foreach $UserGroup as $group=>$item}>
+                        <input type="radio" name="roleId" class="role_<{$item.id}>" value="<{$item.id}>" title="<{$item.name}>" <{if $roleId==$item.id}>checked<{/if}>>
+                        <{/foreach}>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="padding: 15px 0;">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit="" lay-filter="add">确定</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">取消</button>
+                    </div>
+                </div>
+            </form>
+    </div>
+</div>
+<{/block}>
+
+<{block name=script}>
+
+<script>
+    layui.use('table', function(){
+        var $ = layui.$;
+        var table = layui.table
+        ,form = layui.form;
+        //监听是否菜单操作
+        form.on('switch(status)', function(obj){
+            $.getJSON("/index/user/changeuserdata/?type=status&id="+this.value+"&value="+obj.elem.checked, function(data){
+                if(data.code===0){
+                    //layer.msg('切换成功');
+                }else{
+                    layer.msg('切换失败');
+                }
+            });
+        });
+        table.on('tool(user)', function(obj){
+            var data = obj.data;
+            console.log(obj);
+            if(obj.event === 'setRole'){
+                console.log($('.role_'+data.roleId));
+                $('.role_'+data.roleId).prop('checked',true);
+                //form.render('radio');
+                layer.open({
+                    type: 1,
+                    title:'修改所属角色',
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['600px',], //宽高
+                    content: $('.role_div'),
+                });
+                /*
+                * layer.close(index);
+
+                    //这里一般是发送修改的Ajax请求
+
+                    //同步更新表格和缓存对应的值
+                    obj.update({
+                        sign: value
+                    });
+                * */
+            }
+        });
+        //监听单元格编辑
+        table.on('edit(user)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+            $.getJSON("/index/user/changerole/?id="+data.id+"&value="+value, function(data){
+                if(data.code===0){
+                    layer.msg('更改成功');
+                }else{
+                    layer.msg('更改失败');
+                }
+            });
+            /* console.log(obj);
+             layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);*/
+        });
+    });
+</script>
+<{/block}>
+

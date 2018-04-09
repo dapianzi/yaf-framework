@@ -25,7 +25,7 @@
 
         <script type="text/html" id="barUserGroup">
             <a class="layui-btn layui-btn-xs {{ d.id == 1 ? 'layui-btn-disabled' : '' }}" lay-event="{{ d.id == 1 ? '' : 'auth' }}">权限管理</a>
-            <a class="layui-btn layui-btn-danger layui-btn-xs {{ d.id == 1 ? 'layui-btn-disabled' : '' }}" lay-event="{{ d.id == 1 ? '' : 'del' }}">删除</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs {{ (d.id == 1 || d.id == 2)? 'layui-btn-disabled' : '' }}" lay-event="{{ (d.id == 1 || d.id == 2) ? '' : 'del' }}">删除</a>
         </script>
     </div>
 </div>

@@ -125,7 +125,7 @@ function gf_http($url,$method,$parameters = NULL, $headers = array()) {
     curl_setopt($ci, CURLOPT_TIMEOUT, 3000);
     curl_setopt($ci, CURLOPT_HEADER, FALSE);
     curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
-    curl_setopt($ci, CURLOPT_SSL_VERIFYHOST, true);  // 从证书中检查SSL加密算法是否存在
+    curl_setopt($ci, CURLOPT_SSL_VERIFYHOST, 2);  // 从证书中检查SSL加密算法是否存在
     switch (strtolower($method)) {
         case 'post':
             curl_setopt($ci, CURLOPT_POST, TRUE);
