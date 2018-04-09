@@ -45,6 +45,30 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
                 _callbk && _callbk();
             });
         },
+        /**
+         * 提供了默认的图标和关闭弹窗操作
+         * @param content 提示内容
+         * @param yes 确认之后的回调函数
+         */
+        confirm: function(content, yes) {
+            layer.confirm(content, {icon: 3}, function(idx){
+                yes && yes();
+                layer.close(idx);
+            });
+        },
+        /**
+         * 统一的弹窗风格
+         * @param option
+         */
+        open: function(option) {
+            // 默认配置项
+            option = $.extend({
+                type: 1,
+                area: '60%',
+                skin: 'layui-layer-rim',
+            }, option);
+            layer.open(option);
+        },
 
         ajax: function (_url, _data, _ok, _fail) {
             if (this.ajax_lock) {
@@ -90,13 +114,14 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
         ajax_form: function (_form, _ok, _fail) {
             this.ajax($(_form).attr('action'), $(_form).serialize(), _ok, _fail);
         },
-        check_all: function($all, $chk) {
+        check_all: function($all, $chk, cbf) {
             $all.on('change', function() {
-                var checked = $all.prop('checked');
+                var checked = $all[0].checked;
                 $chk.each(function(idx, e) {
-                    console.log(e);
-                    $(e).prop('checked', checked);
-                })
+                    //console.log(e);
+                    e.checked = checked;
+                });
+                cbf && cbf();
             });
         }
     };

@@ -9,6 +9,7 @@
 class TemplateController extends BaseController {
 
     public function indexAction() {
+
         $model = new ScriptTemplateModel();
         $sql = "SELECT s.*,u1.nickName creator,u2.nickName modifier FROM script_template s "
             ." LEFT JOIN user u1 ON s.create_by=u1.id "
@@ -16,7 +17,7 @@ class TemplateController extends BaseController {
         $templates = $model->getAll($sql);
         $result = [];
         foreach ($templates as $t) {
-            $t['format_content'] = $this->_format_template($t['content'], $t['content_type']);
+            $t['format_content'] = $this->_formatTemplate($t['content'], $t['content_type']);
             $result[$t['category']][] = $t;
         }
         $this->assign('result', $result);
@@ -32,6 +33,7 @@ class TemplateController extends BaseController {
         $category = $this->getPost('category', '');
         $content_type = $this->getPost('content_type', '');
         $content = $this->getPost('content', '');
+//        $content = $_POST['content'];
 
         // valid unique name
         $model = new ScriptTemplateModel();
@@ -61,6 +63,9 @@ class TemplateController extends BaseController {
         if ($id > 0) {
             // modify
             $info = $model->get($id);
+            if (!$info) {
+                gf_ajax_error("无效的模板ID");
+            }
             foreach ($data as $k=>$v) {
                 if ($v==$info[$k]) {
                     unset($data[$k]);
@@ -99,7 +104,7 @@ class TemplateController extends BaseController {
     }
 
 
-    public function _format_template($s, $type) {
+    public function _formatTemplate($s, $type) {
         switch ($type) {
             case 'html':
                 $s = html_entity_decode($s);break;

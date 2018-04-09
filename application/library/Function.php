@@ -17,9 +17,10 @@ function gf_safe_input($s) {
     if (empty($s)) {
         return $s;
     } else {
-        return is_array($s) ? array_map('gf_safe_input', $s) : addslashes($s);
+        // 统一在PDO中使用参数绑定，避免双层转义
+        return $s;
+        //return is_array($s) ? array_map('gf_safe_input', $s) : addslashes($s);
     }
-
 }
 
 function gf_ajax_error($msg='') {
