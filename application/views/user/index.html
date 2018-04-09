@@ -62,7 +62,6 @@
             var data = obj.data;
             console.log(obj);
             if(obj.event === 'setRole'){
-                console.log($('.role_'+data.roleId));
                 laytpl($('#roleTpl').html()).render({
                     roleId: data.roleId,
                     id: data.id

@@ -45,6 +45,13 @@
     <input type="checkbox" name="isShow" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="isShow" {{ d.isShow == 1 ? 'checked' : '' }}>
 </script>
 
+<script type="text/html" id="barMenu">
+    {{# if(d.level<3){ }}
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="add">添加子菜单</a>
+    {{# } }}
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
 <script>
     layui.use('table', function(){
         var table = layui.table
@@ -93,6 +100,8 @@
                 });
             } else if(obj.event === 'edit'){
                 window.location.href="/index/menu/edit/?id="+id;
+            }else if(obj.event === 'add'){
+                window.location.href="/index/menu/add/?parenId="+id;
             }else if(obj.event === 'setName'){
                 layer.prompt({
                     formType: 2
@@ -180,9 +189,6 @@
 
     });
 </script>
-<script type="text/html" id="barMenu">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-</script>
+
 <{/block}>
 

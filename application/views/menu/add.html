@@ -26,7 +26,7 @@
                             <option value="">直接选择或搜索选择</option>
                             <option value="0" selected>顶级菜单</option>
                             <{foreach $menu as $group=>$item}>
-                                <option value="<{$item.id}>"><{$item.name}></option>
+                                <option value="<{$item.id}>" <{if $parenId==$item.id}>selected<{/if}> ><{$item.name}></option>
                             <{/foreach}>
                             </select>
                     </div>

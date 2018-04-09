@@ -230,7 +230,9 @@ class MenuController extends BaseController {
             }
         }else{
             $meuninfo=$this->get_tree('','1,2');
+            $parenId=$this->getQuery('parenId');
             $this->assign('menu', $meuninfo);
+            $this->assign('parenId', $parenId);
         }
     }
 
