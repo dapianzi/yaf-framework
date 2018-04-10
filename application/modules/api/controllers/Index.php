@@ -6,7 +6,7 @@
  * @Since: 2017/4/6 16:59
  * Created by PhpStorm.
  */
-class IndexController extends BaseController {
+class IndexController extends Yaf_Controller_Abstract {
     function indexAction() {
         gf_ajax_success(array(
             'controller' => __CLASS__,
