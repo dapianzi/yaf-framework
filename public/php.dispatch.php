@@ -12,8 +12,8 @@ function is_cli(){
 }
 is_cli() || die('Bad Request');
 
-define('APPLICATION_PATH', dirname(__FILE__) . "/../");
-$application = new Yaf_Application(APPLICATION_PATH . "conf/application.ini");
+define('APP_PATH', dirname(__FILE__) . "/../");
+$application = new Yaf_Application(APP_PATH . "conf/application.ini");
 
 function dispatch(&$args) {
     // script name
@@ -32,5 +32,5 @@ function dispatch(&$args) {
     }
 }
 
-$application->getDispatcher()->dispatch(new Yaf_Request_Simple('CLI', 'api', dispatch($argv), 'ini', $argv));
+$application->bootstrap()->getDispatcher()->dispatch(new Yaf_Request_Simple('CLI', 'api', dispatch($argv), 'ini', $argv));
 
