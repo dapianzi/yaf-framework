@@ -833,7 +833,7 @@ a cite {
 }
 
 .layui-layout-body {
-	overflow: hidden
+	overflow-y: scroll;
 }
 
 .layui-layout-admin .layui-header {
