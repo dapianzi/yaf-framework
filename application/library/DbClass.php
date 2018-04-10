@@ -92,6 +92,7 @@ class DbClass
         }
         $whereValues = array();
         $sql = " DELETE FROM $table WHERE " . $this->makeWhereSQL($where, $conjunction, $whereValues);
+        print_r($sql);die;
         return $this->execute ($sql, $whereValues)->rowCount();
     }
 

@@ -47,11 +47,24 @@ class BaseController extends Yaf_Controller_Abstract
         $AuthModel=new AuthModel();
         $node=strtolower('/'.$this->getRequest()->module.'/'.$this->getRequest()->controller.'/'.$this->getRequest()->action.'/');
         $AUTH=$AuthModel->getCurrentAuth($userinfo,$node);
-
         if(!$AUTH){
             throw new WSException('No authority. Please contact administrator！');
         }
+        //记录访问记录及操作
+        $this->addUserActionLog($this->user,$node,$_SERVER['REQUEST_URI']);
         $this->getView()->assign('user', $this->user);
+    }
+
+    /**
+     * 记录访问记录及操作
+     * @param $user 用户
+     * @param $node 节点
+     * @param $uri 地址
+     */
+    function addUserActionLog($user,$node,$uri){
+        $ip=gf_get_remote_addr();
+        $UserModel=new UserModel();
+        $UserModel->addUserActionLog($user,$node,$uri,$ip);
     }
 
     /**
