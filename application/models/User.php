@@ -42,8 +42,8 @@ class UserModel extends DbModel {
     }
 
     public function addUserActionLog($user,$node,$uri,$ip){
-        if($node=="/index/index/index/"){
-            $nodeName="首页";
+        if($node=="/index/index/index/"||$node=="/index/log/index/"||$node=="/index/log/list/"){
+            return false;
         }else{
             $nodeName=$this->getColumn("SELECT name FROM menu where find_in_set(?, url);",array($node));
         }

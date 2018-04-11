@@ -18,19 +18,15 @@ $application = new Yaf_Application(APP_PATH . "conf/application.ini");
 function dispatch(&$args) {
     // script name
     array_shift($args);
-    if (count($args) < 2) {
-        die('Invalid Request');
-    }
     $route = array(
-        1000 => 'index',
+        1000 => 'Otrs',
     );
-    $c = array_shift($args);
-    if (isset($route[$c])) {
-        return $route[$c];
+    if (isset($route[$args[0]])) {
+        return $route[$args[0]];
     } else {
         die('Invalid Request');
     }
 }
 
-$application->bootstrap()->getDispatcher()->dispatch(new Yaf_Request_Simple('CLI', 'api', dispatch($argv), 'ini', $argv));
+$application->bootstrap()->getDispatcher()->dispatch(new Yaf_Request_Simple('CLI', 'api', dispatch($argv), '', $argv));
 
