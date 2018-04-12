@@ -1,0 +1,48 @@
+<{extends 'public/base.html'}>
+<{block name=title}>图表<{/block}>
+<{block name=body}>
+
+<div class="layui-fluid">
+    <div class="layadmin-content layui-row layui-col-space15">
+        <form class="layui-form" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">聚合图：</label>
+            <div class="layui-input-block" style="width:40%;">
+                <select name="category" lay-search lay-filter="filter">
+                    <{foreach $screens as $c}>
+                    <option value="<{$c.screenid}>"><{$c.name}></option>
+                    <{/foreach}>
+                </select>
+            </div>
+        </div>
+        </form>
+        <div class="" id="charts-container"></div>
+    </div>
+</div>
+<{/block}>
+<{block name=script}>
+<!-- <script src="https://cdn.bootcss.com/echarts/4.0.4/echarts.min.js"></script> -->
+<!-- <script src="/js/charts/index.js?v=1"></script> -->
+<script type="text/javascript">
+    layui.extend({
+        cus_charts: 'js/charts/charts',
+        charts_index: 'js/charts/index', //主入口模块
+
+    });
+    
+    layui.use(["element","form",'charts_index'],function(){
+        var element = layui.element;
+        var chartsIndex=layui.charts_index;
+        var form = layui.form;
+        chartsIndex.init();
+        element.tabChange('all-charts','tes1');
+        element.on('tab', function(e){
+            console.log(e);
+        });
+        form.on('select(filter)', function(data){
+            var v= data.value;
+            chartsIndex.get(v);
+        }); 
+    });
+</script>
+<{/block}>

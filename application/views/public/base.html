@@ -18,29 +18,29 @@
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md6">
                 <div class="layui-card">
-                    <div class="layui-card-header">基本环境</div>
+                    <div class="layui-card-header">模板继承</div>
                     <div class="layui-card-body">
                         <table class="layui-table">
                             <colgroup>
-                                <col width="100">
+                                <col width="160">
                                 <col>
                             </colgroup>
                             <tbody>
                             <tr>
-                                <td>当前版本</td>
-                                <td>v1.0.0-alpha</td>
+                                <td>block title</td>
+                                <td>页面标题</td>
                             </tr>
                             <tr>
-                                <td>基于框架</td>
-                                <td>Yaf/Smarty/LayUI</td>
+                                <td>block static</td>
+                                <td>头部静态资源</td>
                             </tr>
                             <tr>
-                                <td>PHP 版本</td>
-                                <td><{$env.php_version}></td>
+                                <td>block body</td>
+                                <td>页面内容</td>
                             </tr>
                             <tr>
-                                <td>MySQL 版本</td>
-                                <td><{$env.mysql_version}></td>
+                                <td>block script</td>
+                                <td>尾部 JS 代码</td>
                             </tr>
                             </tbody>
                         </table>
@@ -53,10 +53,20 @@
     <script src="/layuiadmin/layui/layui.js"></script>
     <script>
         layui.config({
-            base: '/layuiadmin/' //静态资源所在路径
+            base: '/' //静态资源所在路径
         }).extend({
-            comm: 'lib/comm' //主入口模块
-        }).use('comm');
+            /**
+             * 建议模块名称加个cus_前缀区分框架自身的还是自定义的
+             * 例如： cus_echarts
+             */
+            comm: 'layuiadmin/lib/comm',//配置comm模块的路径
+            cus_echarts:'js/lib/echarts_for_layui'
+        });
+    </script>
+    <script type="text/javascript">
+        
+
+
     </script>
     <{block name=script}><{/block}>
 </body>
