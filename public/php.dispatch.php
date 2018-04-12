@@ -5,7 +5,7 @@
  * @Since: 2017/4/7 17:51
  * Created by PhpStorm.
  */
-
+define('WS_EXCEPTION', 10000);
 
 function is_cli(){
     return preg_match("/cli/i", php_sapi_name()) ? TRUE : FALSE;

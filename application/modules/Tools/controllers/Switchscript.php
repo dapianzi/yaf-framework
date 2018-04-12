@@ -6,7 +6,7 @@
  * @Since: 2018-04-04 14:22
  * Created by PhpStorm.
  */
-class SwitchScriptController extends BaseController {
+class SwitchscriptController extends BaseController {
 
     public function indexAction() {
         $search = $this->getQuery('q', '');
