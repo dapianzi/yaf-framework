@@ -27,16 +27,7 @@ class ChartsController extends BaseController {
         $apiObj =$this->zabbixApiObj;
         $params=array();
         $screenList=$apiObj->getScreen();
-        $html ='';
-        $screenIds=array();
-        // gf_dump($screenList);exit;
-        foreach ($screenList as $key => $value) {
-            // $screenIds[]= $value['screenid'];
-        //     $screenIds[]=$value['screenid'];
-           $html .="<a data-id=\"{$value['screenid']}\" target=\"_blank\" href=\"/index/charts/getScreenItem/?id={$value['screenid']}\">{$value['name']}</a></br>";
-        }
-        return  $screenList;
-        // return false; 
+        return  $screenList; 
     }
     function getTestChartsData(){
          /*start-*/
@@ -70,7 +61,8 @@ class ChartsController extends BaseController {
         return false;
     }
     function getScreenItemAction(){
-        $this->getTestChartsData();
+        // sleep(6);
+        // $this->getTestChartsData();
         $itemId=$this->getQuery('id',NULL);
         $timeFrom =$this->getQuery('time_from',date("-1 days"));
         $timeTill =$this->getQuery('time_till',time());

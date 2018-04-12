@@ -1,6 +1,7 @@
 ;
 layui.define(['cus_echarts'], function(exports) {
     var $ = layui.jquery;
+    // var macarons= layui.cus_macarons;
     var echarts = layui.cus_echarts;
     var O = {
         createCharts: function(_el, _data, _conf) {
@@ -101,7 +102,7 @@ layui.define(['cus_echarts'], function(exports) {
                     defConf.legend = {};
                 }
                 defConf.legend.data = titleA;
-                ecObj = echarts.init(_el);
+                ecObj = echarts.init(_el,'shine');
                 //init xAix
                 setxAxis(defxAxis);
                 setZoom(zoom[0], zoom[1]);
