@@ -53,6 +53,8 @@ class BaseController extends Yaf_Controller_Abstract
         //记录访问记录及操作
         $this->addUserActionLog($this->user,$node,$_SERVER['REQUEST_URI']);
         $this->getView()->assign('user', $this->user);
+        $this->getView()->assign('nodeName', $AuthModel->getNodeName($node));
+        $this->getView()->assign('parentNode', $AuthModel->getParentNode($node));
     }
 
     /**
