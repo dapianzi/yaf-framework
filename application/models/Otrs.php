@@ -25,6 +25,7 @@ class OtrsModel extends DbModel {
 
     function getticketInfo($time){
         $sql='SELECT * FROM otrs5.ticket_history where history_type_id=44 and ticket_id not in (select ticket_id from ws_php_develop.ws_otrs_upgrade_log) and create_time>? order by id desc';
+        echo "Do Otrs Upgrade Notify sql= $sql  --- $time..........\n";
         $ticketUpgradeInfo=$this->getRow($sql, array($time));
         if($ticketUpgradeInfo){
             $ticket_id=$ticketUpgradeInfo['ticket_id'];

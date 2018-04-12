@@ -27,7 +27,8 @@ class OtrsController extends Yaf_Controller_Abstract {
     public function doOtrsUpgradeNotify(){
         echo "Do Otrs Upgrade Notify start..........\n";
         $OtrsModel=new OtrsModel();
-        $time='2018-04-11 05:00:00';
+        //$time=date('Y-d-m H:i:s');
+        $time='2018-04-12 10:00:00';
         $touser=$OtrsModel->getWechatUser();
         foreach ($touser as $value){
             $touserlist[]=$value['wechat'];
@@ -69,7 +70,7 @@ class OtrsController extends Yaf_Controller_Abstract {
         //$touser=implode('|',$this->userList);
         $Url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=".$access_token;
         $Data = array(
-            "touser"=>'OuYangDongMing',                      // 企业号中的用户帐号，在zabbix用户Media中配置，如果配置不正常，将按部门发送。
+            "touser"=>$touser,                      // 企业号中的用户帐号，在zabbix用户Media中配置，如果配置不正常，将按部门发送。
             //"toparty"=>37,                        // 企业号中的部门id，群发时使用。
             "msgtype"=>"text",                      // 消息类型。
             "agentid"=>'1000018',                   // 企业号中的应用id。

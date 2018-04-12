@@ -16,7 +16,12 @@
 </style>
 <div class="layui-fluid">
     <div class="layui-card">
-        <div class="layui-card-header">添加用户组</div>
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+              <a href="/index/user/group/">用户组</a>
+              <a><cite>添加用户组</cite></a>
+            </span>
+        </div>
         <div class="layui-card-body">
             <form class="layui-form " onsubmit="return false;" lay-filter="component-form-element">
 
@@ -52,7 +57,7 @@
 <{/block}>
 <{block name=script}>
 <script>
-    layui.use(['form'], function(){
+    layui.use(['form','element'], function(){
         var $ = layui.$;
         var form = layui.form
             ,layer = layui.layer;

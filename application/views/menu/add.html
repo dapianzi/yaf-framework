@@ -16,7 +16,12 @@
 </style>
 <div class="layui-fluid">
     <div class="layui-card">
-        <div class="layui-card-header">添加新菜单</div>
+        <div class="layui-card-header">
+            <span class="layui-breadcrumb">
+              <a href="/index/menu/">菜单管理</a>
+              <a><cite>添加新菜单</cite></a>
+            </span>
+        </div>
         <div class="layui-card-body">
             <form class="layui-form " onsubmit="return false;" lay-filter="component-form-element">
                 <div class="layui-form-item">
@@ -83,7 +88,8 @@
 <{/block}>
 <{block name=script}>
 <script>
-    layui.use(['form', 'layedit', 'laydate'], function(){
+    layui.use(['form', 'layedit', 'laydate','element'], function(){
+        var element = layui.element;
         var $ = layui.$;
         var form = layui.form
             ,layer = layui.layer;
