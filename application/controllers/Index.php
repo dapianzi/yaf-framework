@@ -23,7 +23,9 @@ class IndexController extends BaseController {
 		$db = new DbModel();
 		$env = [
 			'php_version' => phpversion(),
-			'mysql_version' => $db->getColumn("select version()")
+			'mysql_version' => $db->getColumn("select version()"),
+			'yaf_version' => YAF_VERSION,
+			'yaf_env' => Yaf_Application::app()->environ(),
 		];
 		$this->assign('env', $env);
 	}
