@@ -23,11 +23,10 @@ class ZabbixApi extends DbClass
 		$this->json_rpc= $conf->rpcUrl;
 		$this->user= $conf->user;
 		$this->pwd= $conf->pwd;
-		// $this->seesionid =md5('zabbixapisession');
 		parent::__construct($conf->dsn, $conf->username, $conf->password);
-		//login name 
 		$this->loginName= $loginName;
 		$this->iniAuth();
+
     }
     private function jsonRpcGet($data, $is_return = true)
     {
