@@ -1653,7 +1653,7 @@ a cite {
 	border-bottom: 1px solid #f6f6f6;
 	color: #333;
 	border-radius: 2px 2px 0 0;
-	font-size: 14px
+	font-size: 16px
 }
 
 .layui-bg-black,.layui-bg-blue,.layui-bg-cyan,.layui-bg-green,.layui-bg-orange,.layui-bg-red {
@@ -3536,7 +3536,7 @@ body .layui-table-tips .layui-layer-content {
 }
 
 .layui-breadcrumb>* {
-	font-size: 14px
+	font-size: 16px
 }
 
 .layui-breadcrumb a {
