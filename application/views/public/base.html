@@ -53,10 +53,20 @@
     <script src="/layuiadmin/layui/layui.js"></script>
     <script>
         layui.config({
-            base: '/layuiadmin/' //静态资源所在路径
+            base: '/' //静态资源所在路径
         }).extend({
-            comm: 'lib/comm' //主入口模块
-        }).use('comm');
+            /**
+             * 建议模块名称加个cus_前缀区分框架自身的还是自定义的
+             * 例如： cus_echarts
+             */
+            comm: 'layuiadmin/lib/comm',//配置comm模块的路径
+            cus_echarts:'js/lib/echarts_for_layui'
+        });
+    </script>
+    <script type="text/javascript">
+        
+
+
     </script>
     <{block name=script}><{/block}>
 </body>
