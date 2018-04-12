@@ -63,7 +63,9 @@ class RoleModel extends DbModel {
 
     function addUserGroup($param=array()){
         if(count($param)>0){
+
             $status=$this->add($param);
+
             return $status;
         }else{
             return false;

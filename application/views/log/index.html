@@ -14,12 +14,12 @@
         <table class="layui-table" lay-data="{height: 'full-100',cellMinWidth: 80,url:'/index/log/list/', id:'log',page: true,limit:20}" lay-filter="log">
             <thead>
             <tr>
-                <th lay-data="{field:'adate',sort:true}">时间</th>
-                <th lay-data="{field:'userName'}">用户</th>
-                <th lay-data="{field:'nodeName'}">节点名称</th>
-                <th lay-data="{field:'node'}">节点</th>
+                <th lay-data="{field:'adate',sort:true,width:180}">时间</th>
+                <th lay-data="{field:'userName',width:200}">用户</th>
+                <th lay-data="{field:'nodeName',width:200}">节点名称</th>
+                <th lay-data="{field:'node',width:200}">节点</th>
                 <th lay-data="{field:'uri'}">地址</th>
-                <th lay-data="{field:'ip'}">IP</th>
+                <th lay-data="{field:'ip',width:200}">IP</th>
             </tr>
             </thead>
         </table>
@@ -38,6 +38,7 @@
         laydate.render({
             elem: '#time'
             ,type: 'datetime'
+            ,calendar: true
             ,range: true
         });
         var $ = layui.$, active = {
