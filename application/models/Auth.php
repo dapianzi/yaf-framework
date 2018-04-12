@@ -65,4 +65,23 @@ class AuthModel extends DbModel {
         }
         return $menu;
     }
+
+    function getNodeName($node){
+        $nodeName=$this->getColumn("SELECT name FROM menu where find_in_set(?, url);",array($node));
+        return $nodeName;
+    }
+
+    function getParentNode($node){
+        $parentId=$this->getColumn("SELECT parentId FROM menu where find_in_set(?, url);",array($node));
+
+        if($parentId==0){
+            return array('name'=>'','url'=>'');
+        }else{
+            $nodeInfo=$this->getRow("SELECT level,name,url FROM menu where id=?",array($parentId));
+            if($nodeInfo['level']==1){
+                return array('name'=>'','url'=>'');
+            }
+            return $nodeInfo;
+        }
+    }
 }
