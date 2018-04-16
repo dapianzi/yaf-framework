@@ -3,8 +3,9 @@
  * @name ErrorController
  * @desc 错误控制器, 在发生未捕获的异常时刻被调用
  * @see http://www.php.net/manual/en/yaf-dispatcher.catchexception.php
- * @author KF
+ * @author Carl
  */
+
 class ErrorController extends Yaf_Controller_Abstract {
 
 	//从2.1开始, errorAction支持直接通过参数获取异常
@@ -15,35 +16,37 @@ class ErrorController extends Yaf_Controller_Abstract {
 //	}
 
 	public function errorAction($exception) {
-		if ($this->getRequest()->isXmlHttpRequest()) {
-			gf_ajax_error($exception->getMessage());
-		}
-		//functionClass::dump(Yaf_Application::$modules);
-		switch($exception->getCode()) {
+        //functionClass::dump(Yaf_Application::$modules);
+        switch($exception->getCode()) {
 
-//            case WS_INVALID_ADMIN:
-			case WS_EXCEPTION:{
+            case YAF_ERR_NOTFOUND_MODULE:
+            case YAF_ERR_NOTFOUND_CONTROLLER:
+            case YAF_ERR_NOTFOUND_ACTION: {
+                //404
+                header("HTTP/1.1 404 Not Found");
+                break;
+            }
+            case YAF_ERR_AUTOLOAD_FAILED: {
+                header("HTTP/1.1 503 Server Error.");
+            }
+            default:
+            case SYS_EXCEPTION: {
 //				header("HTTP/1.1 404 Not Found");
-				break;
-			}
-//            case YAF_ERR_LOADFAILD:
-//            case YAF_ERR_LOADFAILD_MODULE:
-//            case YAF_ERR_LOADFAILD_CONTROLLER:
-//            case YAF_ERR_LOADFAILD_ACTION:
-			default:
-			{
-				//404
-                //header("HTTP/1.1 503 Server Error.");
-				//todo debug
-//				header("HTTP/1.1 404 Not Found");
-				break;
-			}
-		}
+                if ($this->getRequest()->isXmlHttpRequest()) {
+                    gf_ajax_error($exception->getMessage());
+                }
+                break;
+            }
+        }
+        if (Yaf_Application::app()->environ() !== 'product') {
 
-		$this->getView()->assign('code', $exception->getCode());
-		$this->getView()->assign('message', $exception->getMessage());
-		$this->getView()->assign('exception', get_class($exception));
-		$this->getView()->display('public/error.html');
-		return FALSE;
+            $this->getView()->assign('exception', $exception);
+            $this->getView()->display('public/error.html');
+            return FALSE;
+        } else {
+            $this->getView()->assign('error', '');
+            $this->getView()->display('public/404.html');
+            return FALSE;
+        }
 	}
 }

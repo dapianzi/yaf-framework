@@ -1,9 +1,9 @@
 <?php
 /**
+ *
+ * @Author: Carl
+ * @Since: 2018/4/3 13:59
  * Created by PhpStorm.
- * User: sky / ouyangdongming
- * Date: 2018/4/3
- * Time: 13:59
  */
 class AuthModel extends DbModel {
     // table name
@@ -17,7 +17,7 @@ class AuthModel extends DbModel {
      * @param string $node
      * @return bool
      */
-    public function getCurrentAuth($userinfo,$node){
+    public function getCurrentAuth($userinfo, $node){
         $conf = Yaf_Registry::get('config');
         $no_auth_node=$conf->application->no_auth_node;
         $roleId=$userinfo['roleId'];
@@ -38,8 +38,8 @@ class AuthModel extends DbModel {
 
     /**
      * 获取用户权限
-     * @param int $userId 用户ID
-     * return array
+     * @param integer $userInfo 用户ID
+     * @return array
      */
     public function getUserAuth($userInfo){
         $roleId=$userInfo['roleId'];

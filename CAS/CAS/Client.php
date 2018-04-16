@@ -241,7 +241,7 @@ class CAS_Client
      * - $_server['port']: the port the CAS server is running on
      * - $_server['uri']: the base URI the CAS server is responding on
      * - $_server['base_url']: the base URL of the CAS server
-     * - $_server['login_url']: the login URL of the CAS server
+     * - $_server['login_url']: the account URL of the CAS server
      * - $_server['service_validate_url']: the service validating URL of the
      *   CAS server
      * - $_server['proxy_url']: the proxy URL of the CAS server
@@ -325,7 +325,7 @@ class CAS_Client
     }
 
     /**
-     * This method is used to retrieve the login URL of the CAS server.
+     * This method is used to retrieve the account URL of the CAS server.
      *
      * @param bool $gateway true to check authentication, false to force it
      * @param bool $renew   true to force the authentication with the CAS server
@@ -339,7 +339,7 @@ class CAS_Client
         phpCAS::traceBegin();
         // the URL is build only when needed
         if ( empty($this->_server['login_url']) ) {
-            $this->_server['login_url'] = $this->_buildQueryUrl($this->_getServerBaseURL().'login','service='.urlencode($this->getURL()));
+            $this->_server['login_url'] = $this->_buildQueryUrl($this->_getServerBaseURL().'account','service='.urlencode($this->getURL()));
         }
         $url = $this->_server['login_url'];
         if ($renew) {
@@ -356,11 +356,11 @@ class CAS_Client
     }
 
     /**
-     * This method sets the login URL of the CAS server.
+     * This method sets the account URL of the CAS server.
      *
-     * @param string $url the login URL
+     * @param string $url the account URL
      *
-     * @return string login url
+     * @return string account url
      */
     public function setServerLoginURL($url)
     {
@@ -1096,9 +1096,9 @@ class CAS_Client
     private $_user = '';
 
     /**
-     * This method sets the CAS user's login name.
+     * This method sets the CAS user's account name.
      *
-     * @param string $user the login name of the authenticated user.
+     * @param string $user the account name of the authenticated user.
      *
      * @return void
      */
@@ -1108,9 +1108,9 @@ class CAS_Client
     }
 
     /**
-     * This method returns the CAS user's login name.
+     * This method returns the CAS user's account name.
      *
-     * @return string the login name of the authenticated user
+     * @return string the account name of the authenticated user
      *
      * @warning should be called only after CAS_Client::forceAuthentication() or
      * CAS_Client::isAuthenticated(), otherwise halt with an error.
@@ -1124,9 +1124,9 @@ class CAS_Client
     }
 
     /**
-     * This method returns the CAS user's login name.
+     * This method returns the CAS user's account name.
      *
-     * @return string the login name of the authenticated user
+     * @return string the account name of the authenticated user
      *
      * @warning should be called only after CAS_Client::forceAuthentication() or
      * CAS_Client::isAuthenticated(), otherwise halt with an error.
@@ -1321,8 +1321,8 @@ class CAS_Client
      * This method is called to check whether the user is authenticated or not.
      *
      * @return true when the user is authenticated, false when a previous
-     * gateway login failed or  the function will not return if the user is
-     * redirected to the cas server for a gateway login attempt
+     * gateway account failed or  the function will not return if the user is
+     * redirected to the cas server for a gateway account attempt
      */
     public function checkAuthentication()
     {
@@ -1360,7 +1360,7 @@ class CAS_Client
                     );
                 } else {
                     phpCAS::trace(
-                        'user is not authenticated (cached for until login pressed)'
+                        'user is not authenticated (cached for until account pressed)'
                     );
                 }
             } else {

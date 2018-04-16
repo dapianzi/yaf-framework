@@ -3,7 +3,7 @@
  * @name SamplePlugin
  * @desc Yaf定义了如下的6个Hook,插件之间的执行顺序是先进先Call
  * @see http://www.php.net/manual/en/class.yaf-plugin-abstract.php
- * @author KF
+ * @author Carl
  */
 class SamplePlugin extends Yaf_Plugin_Abstract {
 
@@ -15,7 +15,7 @@ class SamplePlugin extends Yaf_Plugin_Abstract {
 //		$router = $request->getCurrentRoute();
 
 
-//		$request->module);
+		//gf_dump($request);
 		//var_dump(getCurrentRoute()); //在路由结束以后, 获取起作用的路由协议
 //		var_dump(getRoute());
 //		var_dump(getRoutes());

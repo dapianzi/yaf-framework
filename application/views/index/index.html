@@ -16,23 +16,18 @@
             </a>
           </li>
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
-            <a lay-href="//cas.765.com.cn/" tppabs="//cas.765.com.cn/" target="_blank" title="用户中心">
-              <i class="layui-icon layui-icon-website"></i><span>用户中心</span>
+            <a lay-href="//www.layui.com/doc/" tppabs="http://www.layui.com/doc/" target="_blank" title="layUI Admin">
+              <i class="layui-icon layui-icon-website"></i> <span>LayUI Admin</span>
             </a>
           </li>
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
-            <a href="//172.16.10.16/zabbix/" tppabs="//172.16.10.16/zabbix/" target="_blank" title="zabbix监控">
-              <i class="layui-icon layui-icon-website"></i><span>zabbix监控</span>
+            <a lay-href="//www.laruence.com/manual/" tppabs="http://www.laruence.com/manual/" target="_blank" title="Yaf framework">
+              <i class="layui-icon layui-icon-website"></i> <span>Yaf Framework</span>
             </a>
           </li>
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
-            <a href="//hd.765.com.cn/otrs/index.pl" tppabs="//hd.765.com.cn/otrs/index.pl" target="_blank" title="工单系统">
-              <i class="layui-icon layui-icon-website"></i><span>工单系统</span>
-            </a>
-          </li>
-          <li class="layui-nav-item layui-hide-xs" lay-unselect>
-            <a href="//bbs.765.com.cn/" tppabs="//bbs.765.com.cn/" target="_blank" title="稳速论坛">
-              <i class="layui-icon layui-icon-website"></i><span>稳速论坛</span>
+            <a lay-href="//www.smarty.net/docs/zh_CN/" tppabs="//www.smarty.net/docs/zh_CN/" target="_blank" title="百度一下">
+              <i class="layui-icon layui-icon-website"></i> <span>Smarty Template</span>
             </a>
           </li>
           <li class="layui-nav-item" lay-unselect>
@@ -55,16 +50,16 @@
           <li class="layui-nav-item" lay-unselect>
             <{if $user}>
             <a href="javascript:;">
-              <cite><{$user.nickName}></cite>
+              <cite><{$user.username}></cite>
             </a>
             <dl class="layui-nav-child">
-              <dd><a lay-href="/index/account/info/" tppabs="/index/account/info/">基本资料</a></dd>
-              <dd><a lay-href="/index/account/password/" tppabs="/index/account/password/">修改密码</a></dd>
+              <dd><a lay-href="/account/info/" tppabs="/account/info/">基本资料</a></dd>
+              <dd><a lay-href="/account/password/" tppabs="/account/password/">修改密码</a></dd>
               <hr>
-              <dd style="text-align: center;"><a href="/logout/">退出</a></dd>
+              <dd style="text-align: center;"><a href="/account/logout/">退出</a></dd>
             </dl>
             <{else}>
-            <a href="/index/index/login/">登录</a>
+            <a href="/account/login/">登录</a>
             <{/if}>
           </li>
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
@@ -77,7 +72,7 @@
       <div class="layui-side layui-side-menu">
         <div class="layui-side-scroll">
           <div class="layui-logo" lay-href="/index/index/dashboard/" tppabs="/index/index/dashboard/">
-            <span>稳速综合运维管理平台</span>
+            <span>Carl的管理平台框架</span>
           </div>
           
           <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">

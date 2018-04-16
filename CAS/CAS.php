@@ -975,7 +975,7 @@ class phpCAS
     /**
      * Set the times authentication will be cached before really accessing the
      * CAS server in gateway mode:
-     * - -1: check only once, and then never again (until you pree login)
+     * - -1: check only once, and then never again (until you pree account)
      * - 0: always check
      * - n: check every "n" time
      *
@@ -1063,12 +1063,12 @@ class phpCAS
     /**
      * This method is called to check if the user is already authenticated
      * locally or has a global cas session. A already existing cas session is
-     * determined by a cas gateway call.(cas login call without any interactive
+     * determined by a cas gateway call.(cas account call without any interactive
      * prompt)
      *
      * @return true when the user is authenticated, false when a previous
-     * gateway login failed or the function will not return if the user is
-     * redirected to the cas server for a gateway login attempt
+     * gateway account failed or the function will not return if the user is
+     * redirected to the cas server for a gateway account attempt
      */
     public static function checkAuthentication()
     {
@@ -1166,9 +1166,9 @@ class phpCAS
     }
 
     /**
-     * This method returns the CAS user's login name.
+     * This method returns the CAS user's account name.
      *
-     * @return string the login name of the authenticated user
+     * @return string the account name of the authenticated user
      * @warning should only be called after phpCAS::forceAuthentication()
      * or phpCAS::checkAuthentication().
      * */
@@ -1277,10 +1277,10 @@ class phpCAS
     }
 
     /**
-     * This method returns the URL to be used to login.
+     * This method returns the URL to be used to account.
      * or phpCAS::isAuthenticated().
      *
-     * @return the login name of the authenticated user
+     * @return the account name of the authenticated user
      */
     public static function getServerLoginURL()
     {
@@ -1290,9 +1290,9 @@ class phpCAS
     }
 
     /**
-     * Set the login URL of the CAS server.
+     * Set the account URL of the CAS server.
      *
-     * @param string $url the login URL
+     * @param string $url the account URL
      *
      * @return void
      * @since 0.4.21 by Wyman Chan
@@ -1385,10 +1385,10 @@ class phpCAS
     }
 
     /**
-     * This method returns the URL to be used to login.
+     * This method returns the URL to be used to account.
      * or phpCAS::isAuthenticated().
      *
-     * @return the login name of the authenticated user
+     * @return the account name of the authenticated user
      */
     public static function getServerLogoutURL()
     {

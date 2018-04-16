@@ -13,7 +13,7 @@ class BaseController extends Yaf_Controller_Abstract
     public $conf;
     public $is_ajax;
     public $user;
-    public $auth;
+    public $auth = TRUE;
 
     public function init() {
         // inti config
@@ -24,37 +24,41 @@ class BaseController extends Yaf_Controller_Abstract
         $this->getView()->assign('BASE_URI', $this->base_uri);
         // init request mode
         $this->is_ajax = $this->getRequest()->isXmlHttpRequest ();
-        if (!phpCAS::isAuthenticated()) {
-            phpCAS::forceAuthentication();
-        } else {
-            $UserModel=new UserModel();
-            if(phpCAS::hasAttribute('username')){
-                $userinfo = $UserModel->getUserInfo(phpCAS::getAttributes());
-            }
+
+        if ($this->auth) {
+
+//            $UserModel = new UserModel();
+//            $us$UserModel = new UserModel();
+            $userinfo = [
+                'id' => 1,
+                'username' => 'offline',
+                'nickName' => 'dapianzi',
+            ];
             if (empty($userinfo)) {
-                throw new WSException('Invalid User. Please login first.');
+                $this->redirect('/account/login/');
             }
-            if($userinfo['status']!=1){
-                throw new WSException('The account is not allowed to login. Please contact administrator！');
-            }
-            $UserRoleStatus=$UserModel->getUserRoleStatus($userinfo);
-            if($UserRoleStatus!=1){
-                throw new WSException('The role is not allowed to login. Please contact administrator！');
-            }
+//            if($userinfo['status']!=1){
+//                throw new SysException('The account is not allowed to account. Please contact administrator！');
+//            }
+//            $UserRoleStatus=$UserModel->getUserRoleStatus($userinfo);
+//            if($UserRoleStatus!=1){
+//                throw new SysException('The role is not allowed to account. Please contact administrator！');
+//            }
             $this->user = $userinfo;
         }
+
         //判断用户在当前节点是否有权限
-        $AuthModel=new AuthModel();
-        $node=strtolower('/'.$this->getRequest()->module.'/'.$this->getRequest()->controller.'/'.$this->getRequest()->action.'/');
-        $AUTH=$AuthModel->getCurrentAuth($userinfo,$node);
-        if(!$AUTH){
-            throw new WSException('No authority. Please contact administrator！');
-        }
-        //记录访问记录及操作
-        $this->addUserActionLog($this->user,$node,$_SERVER['REQUEST_URI']);
+//        $AuthModel=new AuthModel();
+//        $node=strtolower('/'.$this->getRequest()->module.'/'.$this->getRequest()->controller.'/'.$this->getRequest()->action.'/');
+//        $AUTH=$AuthModel->getCurrentAuth($userinfo,$node);
+//        if(!$AUTH){
+//            throw new SysException('No authority. Please contract administrator！');
+//        }
+//        //记录访问记录及操作
+//        $this->addUserActionLog($this->user, $node, $_SERVER['REQUEST_URI']);
         $this->getView()->assign('user', $this->user);
-        $this->getView()->assign('nodeName', $AuthModel->getNodeName($node));
-        $this->getView()->assign('parentNode', $AuthModel->getParentNode($node));
+//        $this->getView()->assign('nodeName', $AuthModel->getNodeName($node));
+//        $this->getView()->assign('parentNode', $AuthModel->getParentNode($node));
     }
 
     /**

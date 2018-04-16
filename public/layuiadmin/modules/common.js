@@ -9,7 +9,7 @@ layui.define(function(e) {
             data: {},
             done: function(e) {
                 i.exit(function() {
-                    location.href = "user/login.html"
+                    location.href = "user/account.html"
                 })
             }
         })

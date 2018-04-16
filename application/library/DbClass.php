@@ -38,7 +38,7 @@ class DbClass
         catch (Exception $e)
         {
             $this->errMessage = "Database connect failed:\n\n" . $e->getMessage();
-            throw new WSException($this->errMessage);
+            throw new SysException($this->errMessage);
         }
     }
 
@@ -54,7 +54,7 @@ class DbClass
             return $pre;
         } catch (PDOException $e) {
             $this->errMessage = $e->getMessage();
-            throw new WSException($e);
+            throw new SysException($e);
         }
     }
 
@@ -74,11 +74,11 @@ class DbClass
     public function update($table, $param, $where, $conjunction = 'AND') {
         if (!count($param)) {
             $this->errMessage = 'update must have set.';
-            throw new WSException('update must have set.');
+            throw new SysException('update must have set.');
         }
         if (!count($where)) {
             $this->errMessage = 'update must have where.';
-            throw new WSException('update must have where.');
+            throw new SysException('update must have where.');
         }
         $whereValues = array();
         $sql = " UPDATE $table SET " . $this->makeSetSQL($param) . ' WHERE ' . $this->makeWhereSQL($where, $conjunction, $whereValues);
@@ -88,7 +88,7 @@ class DbClass
     public function delete($table, $where, $conjunction = 'AND') {
         if (!count($where)) {
             $this->errMessage = 'delete must have where.';
-            throw new WSException('delete must have where.');
+            throw new SysException('delete must have where.');
         }
         $whereValues = array();
         $sql = " DELETE FROM $table WHERE " . $this->makeWhereSQL($where, $conjunction, $whereValues);
@@ -142,7 +142,7 @@ class DbClass
 
     public function makeSetSQL($columns) {
         if (! count ($columns)) {
-            throw new WSException ('columns must not be empty');
+            throw new SysException ('columns must not be empty');
         }
         $tmp = array();
         // Same syntax works for NULL as well.
@@ -154,10 +154,10 @@ class DbClass
 
     public function makeWhereSQL ($where_columns, $conjunction, &$params = array()) {
         if (! in_array (strtoupper ($conjunction), array ('AND', '&&', 'OR', '||', 'XOR'))) {
-            throw new WSException ('conjunction'. $conjunction. 'invalid operator');
+            throw new SysException ('conjunction'. $conjunction. 'invalid operator');
         }
         if (! count ($where_columns)) {
-            throw new WSException ('where_columns must not be empty');
+            throw new SysException ('where_columns must not be empty');
         }
         $params = array();
         $tmp = array();
@@ -180,7 +180,7 @@ class DbClass
 
     public function questionMarks($count) {
         if ($count <= 0) {
-            throw new WSException('count must be greater than zero');
+            throw new SysException('count must be greater than zero');
         }
         return implode(', ', array_fill(0, $count, '?'));
     }

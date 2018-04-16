@@ -44,7 +44,7 @@
  *
  * 	} catch (CAS_ProxyTicketException $e) {
  *	    if ($e->getCode() == PHPCAS_SERVICE_PT_FAILURE)
- *			return "Your login has timed out. You need to log in again.";
+ *			return "Your account has timed out. You need to log in again.";
  *		else
  *			// Other proxy ticket errors are from bad request format
  *          // (shouldn't happen) or CAS server failure (unlikely)

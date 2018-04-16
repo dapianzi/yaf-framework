@@ -268,7 +268,7 @@ class MenuController extends BaseController {
         }else{
             $id=$this->getQuery('id');
             if(!$id){
-                throw new WSException('ID参数不存在');
+                throw new SysException('ID参数不存在');
             }
             $meuninfo=$this->get_tree('','1,2');
             $MenuInfo=$MenuModel->getMenuInfo($id);

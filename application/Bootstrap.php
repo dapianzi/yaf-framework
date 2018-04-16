@@ -20,7 +20,7 @@ class Bootstrap extends Yaf_Bootstrap_Abstract{
             Yaf_Session::getInstance()->start();
         }
 //		header('content-type:text/html;charset=utf-8');
-	}
+    }
 
 	public function _initPlugin(Yaf_Dispatcher $dispatcher) {
 		//注册一个插件
