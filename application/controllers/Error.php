@@ -38,8 +38,8 @@ class ErrorController extends Yaf_Controller_Abstract {
                 break;
             }
         }
+        gf_logfile($exception->getMessage());
         if (Yaf_Application::app()->environ() !== 'product') {
-
             $this->getView()->assign('exception', $exception);
             $this->getView()->display('public/error.html');
             return FALSE;

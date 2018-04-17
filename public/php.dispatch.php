@@ -5,7 +5,6 @@
  * @Since: 2017/4/7 17:51
  * Created by PhpStorm.
  */
-define('SYS_EXCEPTION', 10000);
 define('APP_PATH', dirname(__FILE__) . "/../");
 $application = new Yaf_Application(APP_PATH . "conf/application.ini");
 

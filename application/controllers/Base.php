@@ -19,58 +19,65 @@ class BaseController extends Yaf_Controller_Abstract
         // inti config
         $conf = Yaf_Registry::get('config');
         $this->conf = $conf;
-        $this->base_uri = $conf->application->baseUri;
-
-        $this->getView()->assign('BASE_URI', $this->base_uri);
         // init request mode
         $this->is_ajax = $this->getRequest()->isXmlHttpRequest ();
 
+        // init user
         if ($this->auth) {
-
-//            $UserModel = new UserModel();
-//            $us$UserModel = new UserModel();
-            $userinfo = [
-                'id' => 1,
-                'username' => 'offline',
-                'nickName' => 'dapianzi',
-            ];
+            $UserModel = new UserModel();
+            $userinfo = $UserModel->getUserInfo(Yaf_Session::getInstance()->get('user'));
             if (empty($userinfo)) {
+                Yaf_Session::getInstance()->del('user');
                 $this->redirect('/account/login/');
             }
-//            if($userinfo['status']!=1){
-//                throw new SysException('The account is not allowed to account. Please contact administrator！');
-//            }
-//            $UserRoleStatus=$UserModel->getUserRoleStatus($userinfo);
-//            if($UserRoleStatus!=1){
-//                throw new SysException('The role is not allowed to account. Please contact administrator！');
-//            }
+            if (STATUS_NO_USE == $userinfo['status']) {
+                throw new SysException('Access denied! Your account has been blocked.');
+            }
+            if (STATUS_NO_USE == $userinfo['role_status']) {
+                throw new SysException('Access denied! The role of your account has been blocked.');
+            }
             $this->user = $userinfo;
-        }
+            $curr_node = strtolower('/'.$this->getModuleName().'/'.$this->getRequest()->getControllerName().'/'.$this->getRequest()->getActionName().'/');
+            $MenuModel = new MenuModel();
+            $this->assign('node_nav', $MenuModel->getNodeName($curr_node));
+            //判断用户在当前节点是否有权限
+            if ($this->user['role_id'] != ROLE_SUPERADMIN) {
+                $node_id = $MenuModel->getMenuId($curr_node);
+                $valid = (new RoleModel())->validPermission($node_id, $this->user['role_id']);
+                if (!$valid) {
+                    throw new SysException('Access denied. Your account don not have the permission to visit this url.');
+                }
+            }
 
-        //判断用户在当前节点是否有权限
-//        $AuthModel=new AuthModel();
-//        $node=strtolower('/'.$this->getRequest()->module.'/'.$this->getRequest()->controller.'/'.$this->getRequest()->action.'/');
-//        $AUTH=$AuthModel->getCurrentAuth($userinfo,$node);
-//        if(!$AUTH){
-//            throw new SysException('No authority. Please contract administrator！');
-//        }
-//        //记录访问记录及操作
-//        $this->addUserActionLog($this->user, $node, $_SERVER['REQUEST_URI']);
-        $this->getView()->assign('user', $this->user);
-//        $this->getView()->assign('nodeName', $AuthModel->getNodeName($node));
-//        $this->getView()->assign('parentNode', $AuthModel->getParentNode($node));
+            //记录访问记录及操作
+            $this->log('系统访问日志');
+        }
+        $this->assign('user', $this->user);
     }
 
     /**
-     * 记录访问记录及操作
-     * @param $user 用户
-     * @param $node 节点
-     * @param $uri 地址
+     * @param $action [ACTION_ADD, ACTION_UPDATE, ACTION_DEL, ACTION_VIEW]
+     * @param $result [RESULT_SUCCESS, RESULT_FAIL]
+     * @param $details
+     * @return bool|string
      */
-    function addUserActionLog($user,$node,$uri){
-        $ip=gf_get_remote_addr();
-        $UserModel=new UserModel();
-        $UserModel->addUserActionLog($user,$node,$uri,$ip);
+    public function log($details, $action=ACTION_VIEW, $result=RESULT_SUCCESS){
+        $ip = gf_get_remote_addr();
+        $uri = $_SERVER['REQUEST_URI'];
+        $data = json_encode($_POST, JSON_UNESCAPED_SLASHES);
+        $uid = $this->user['id'];
+        $details = '['.gf_now().'] ' . $details;
+
+        $data = array(
+            'action' => $action,
+            'result' => $result,
+            'uid'=> $uid,
+            'ip' => $ip,
+            'uri' => $uri,
+            'data'=> $data,
+            'details' => $details,
+        );
+        return (new UserModel())->addUserLogs($data);
     }
 
     /**

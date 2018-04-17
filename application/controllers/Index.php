@@ -13,29 +13,12 @@ class IndexController extends BaseController {
      * 对于如下的例子, 当访问http://yourhost/sample/index/index/index/name/KF 的时候, 你就会发现不同
      */
 	public function indexAction() {
-//        $menuModel = new MenuModel();
-//        $menuList = $menuModel->getMenuList($this->user);
-        $menuList = [
-            'index' => [
-                'page' => '控制台',
-                'href' => '/index/index/dashboard/',
-                'icon' => 'home'
-            ],
-            'system' => [
-                'page' => '系统配置',
-                'link' => '',
-                'icon' => 'config',
-                'items' => [
-                    '系统用户管理' => '/system/user/',
-                    '用户权限' => '/system/permission/',
-                    '系统日志' => '/system/logs/',
-                    '系统参数配置' => '/system/config/',
-                ]
-            ]
-        ];
+        $menuModel = new MenuModel();
+
+        $menuList = $menuModel->getMenuList($this->user['role_id']);
 		$this->assign('menu', $menuList);
 		// extra info
-		$this->assign('unread_messages', 12);
+		$this->assign('unread_messages', 0);
 	}
 
 	public function dashboardAction() {
@@ -49,6 +32,9 @@ class IndexController extends BaseController {
 		$this->assign('env', $env);
 	}
 
-
+	public function info() {
+	    echo 'To be continued..';
+	    exit;
+    }
 
 }

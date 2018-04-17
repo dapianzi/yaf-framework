@@ -158,7 +158,7 @@ class ChartsController extends BaseController {
     }
 	function testTools() {
 
-		$db = new DbClass('mysql:host=183.2.213.63;dbname=zabbix;port=3306', 'kf_zabbix', 'kfzabbixpass');
+		$db = new PDOClass('mysql:host=183.2.213.63;dbname=zabbix;port=3306', 'kf_zabbix', 'kfzabbixpass');
 		$rs = $db->getAll("SELECT
  table_name,column_name
 FROM

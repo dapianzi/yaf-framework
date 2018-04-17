@@ -7,13 +7,14 @@
  */
 class MenuController extends BaseController {
 
-    public function init() {
-        parent::init();
-        $menu_icon=array('home','set','auz','fire','diamond','location','read','survey','download','component','shezhi1','yinqing','star','chat','list','tubiao','tree','xuanzemoban48','gongju','wenjian','layouts','user','jilu','unlink','senior','tools');
-        $this->assign('menu_icon', $menu_icon);
-    }
+    public $menu_icon = array(
+        'home', 'set', 'auz', 'fire', 'diamond', 'location','read', 'survey',
+        'download', 'component', 'shezhi1', 'yinqing', 'star', 'chat', 'list',
+        'tubiao', 'tree', 'xuanzemoban48', 'gongju', 'wenjian', 'layouts',
+        'user', 'jilu', 'unlink', 'senior', 'tools'
+    );
 
-    function indexAction(){
+    public function indexAction(){
 
     }
 
@@ -130,16 +131,16 @@ class MenuController extends BaseController {
     /**
      * ajax修改菜单字段
      */
-    function changedataAction(){
-        $type= $this->getQuery('type');
-        $id= $this->getQuery('id');
-        $value= $this->getQuery('value');
-        $isName= $this->getQuery('isName',0);
-        if(!$type||!$id){
+    function changeMenuAction(){
+        $type = $this->getQuery('type');
+        $id = $this->getQuery('id');
+        $value = $this->getQuery('value');
+        $isName = $this->getQuery('isName', 0);
+        if (!$type||!$id) {
             return gf_ajax_error('参数错误');
         }
-        $MenuModel=new MenuModel();
-        $status=$MenuModel->changeMenuValue($type,$id,$value);
+        $MenuModel = new MenuModel();
+        $status = $MenuModel->changeMenuValue($type,$id,$value);
         if($status){
             $name='';
             if($isName==1){

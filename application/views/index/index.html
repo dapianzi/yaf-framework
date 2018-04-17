@@ -15,21 +15,11 @@
               <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
             </a>
           </li>
-          <li class="layui-nav-item layui-hide-xs" lay-unselect>
-            <a lay-href="//www.layui.com/doc/" tppabs="http://www.layui.com/doc/" target="_blank" title="layUI Admin">
-              <i class="layui-icon layui-icon-website"></i> <span>LayUI Admin</span>
-            </a>
-          </li>
-          <li class="layui-nav-item layui-hide-xs" lay-unselect>
-            <a lay-href="//www.laruence.com/manual/" tppabs="http://www.laruence.com/manual/" target="_blank" title="Yaf framework">
-              <i class="layui-icon layui-icon-website"></i> <span>Yaf Framework</span>
-            </a>
-          </li>
-          <li class="layui-nav-item layui-hide-xs" lay-unselect>
-            <a lay-href="//www.smarty.net/docs/zh_CN/" tppabs="//www.smarty.net/docs/zh_CN/" target="_blank" title="百度一下">
-              <i class="layui-icon layui-icon-website"></i> <span>Smarty Template</span>
-            </a>
-          </li>
+          <!--<li class="layui-nav-item layui-hide-xs" lay-unselect>-->
+            <!--<a lay-href="//www.layui.com/doc/"  target="_blank" title="layUI Admin">-->
+              <!--<i class="layui-icon layui-icon-website"></i> <span>LayUI Admin</span>-->
+            <!--</a>-->
+          <!--</li>-->
           <li class="layui-nav-item" lay-unselect>
             <a href="javascript:;" layadmin-event="refresh" title="刷新">
               <i class="layui-icon layui-icon-refresh-3"></i>
@@ -38,24 +28,24 @@
         </ul>
         <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
           
-          <li class="layui-nav-item" lay-unselect>
-            <a lay-href="/index/message/" tppabs="/index/message/" layadmin-event="message" lay-text="消息中心">
-              <i class="layui-icon layui-icon-notice"></i>  
-              <!-- 如果有新消息，则显示小圆点 -->
-              <{if $unread_messages}>
-              <span class="layui-badge-dot"></span>
-              <{/if}>
-            </a>
-          </li>
+          <!--<li class="layui-nav-item" lay-unselect>-->
+            <!--<a lay-href="/index/message/" tppabs="/index/message/" layadmin-event="message" lay-text="消息中心">-->
+              <!--<i class="layui-icon layui-icon-notice"></i>  -->
+              <!--&lt;!&ndash; 如果有新消息，则显示小圆点 &ndash;&gt;-->
+              <!--<{if $unread_messages}>-->
+              <!--<span class="layui-badge-dot"></span>-->
+              <!--<{/if}>-->
+            <!--</a>-->
+          <!--</li>-->
           <li class="layui-nav-item" lay-unselect>
             <{if $user}>
+
             <a href="javascript:;">
               <cite><{$user.username}></cite>
             </a>
             <dl class="layui-nav-child">
-              <dd><a lay-href="/account/info/" tppabs="/account/info/">基本资料</a></dd>
+              <!--<dd><a lay-href="/account/info/" tppabs="/account/info/">基本资料</a></dd>-->
               <dd><a lay-href="/account/password/" tppabs="/account/password/">修改密码</a></dd>
-              <hr>
               <dd style="text-align: center;"><a href="/account/logout/">退出</a></dd>
             </dl>
             <{else}>
@@ -76,24 +66,24 @@
           </div>
           
           <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
-            <{foreach $menu as $group=>$item}>
-            <{if isset($item.items)&&is_array($item.items)}>
+            <{foreach $menu[0] as $item}>
+            <{if isset($menu[$item['id']])}>
             <li data-name="get" class="layui-nav-item">
-              <a href="javascript:;" lay-tips="<{$item.page}>" lay-direction="2">
+              <a href="javascript:;" lay-tips="<{$item.node}>" lay-direction="1">
                 <i class="layui-icon layui-icon-<{$item.icon}>" ></i>
-                <cite><{$item.page}></cite>
+                <cite><{$item.node}></cite>
               </a>
               <dl class="layui-nav-child">
-                <{foreach $item.items as $k=>$v}>
-                <dd><a href="javascript:;" lay-href="<{$v}>" ><{$k}></a></dd>
+                <{foreach $menu[$item['id']] as $v}>
+                <dd><a href="javascript:;" lay-href="<{$v.href}>" ><{$v.node}></a></dd>
                 <{/foreach}>
               </dl>
             </li>
             <{else}>
             <li data-name="get" class="layui-nav-item">
-              <a href="javascript:;" lay-href="<{$item.href}>" lay-tips="<{$item.page}>" lay-direction="2">
+              <a href="javascript:;" lay-href="<{$item.href}>" lay-tips="<{$item.node}>" lay-direction="1">
                 <i class="layui-icon layui-icon-<{$item.icon}>"></i>
-                <cite><{$item.page}></cite>
+                <cite><{$item.node}></cite>
               </a>
             </li>
             <{/if}>

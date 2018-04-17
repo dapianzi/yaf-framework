@@ -5,36 +5,10 @@
  * @Since: 2018/4/3 13:59
  * Created by PhpStorm.
  */
-class AuthModel extends DbModel {
+class AuthModel extends PDOModel {
     // table name
     public $table = 'menu';
-
     public $confName = 'mysql';
-
-    /**
-     * 判断当前权限
-     * @param array $userinfo
-     * @param string $node
-     * @return bool
-     */
-    public function getCurrentAuth($userinfo, $node){
-        $conf = Yaf_Registry::get('config');
-        $no_auth_node=$conf->application->no_auth_node;
-        $roleId=$userinfo['roleId'];
-        if($roleId!=1){
-            $node_id=$this->getColumn("SELECT id FROM menu where find_in_set(?, url);",array($node));
-            $authority=$this->getColumn("SELECT authority FROM role where id = ?",array($roleId));
-            $authority_arr=explode(',',$authority);
-            $no_auth_node_arr=explode(',',$no_auth_node);
-            if((is_array($authority_arr)&&in_array($node_id,$authority_arr))||in_array($node,$no_auth_node_arr)){
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return true;
-        }
-    }
 
     /**
      * 获取用户权限
@@ -66,22 +40,4 @@ class AuthModel extends DbModel {
         return $menu;
     }
 
-    function getNodeName($node){
-        $nodeName=$this->getColumn("SELECT name FROM menu where find_in_set(?, url);",array($node));
-        return $nodeName;
-    }
-
-    function getParentNode($node){
-        $parentId=$this->getColumn("SELECT parentId FROM menu where find_in_set(?, url);",array($node));
-
-        if($parentId==0){
-            return array('name'=>'','url'=>'');
-        }else{
-            $nodeInfo=$this->getRow("SELECT level,name,url FROM menu where id=?",array($parentId));
-            if($nodeInfo['level']==1){
-                return array('name'=>'','url'=>'');
-            }
-            return $nodeInfo;
-        }
-    }
 }

@@ -76,8 +76,14 @@ function gf_shell_color($str, $color='') {
     return sprintf("\033[40;%dm%s\033[0m", $color, $str);
 }
 
-function gf_ajax_error($msg='') {
-    return gf_ajax_return([], -1, $msg);
+function gf_logfile($s) {
+    $f = fopen(LOG_FILE, 'a+');
+    fwrite($f, '['.gf_now().'] '.$s."\n");
+    fclose($f);
+}
+
+function gf_ajax_error($msg='', $code=-1) {
+    return gf_ajax_return([], $code, $msg);
 }
 
 function gf_ajax_success($data, $extra=[]) {
@@ -214,4 +220,14 @@ function gf_rand_str($n) {
         $str .= $alpha[rand(0, 35)];
     }
     return $str;
+}
+
+function gf_set_assoc($array, $key) {
+    $ret = [];
+    foreach ($array as $k=>$v) {
+        if (isset($v[$key])) {
+            $ret[$v[$key]] = $v;
+        }
+    }
+    return $ret;
 }

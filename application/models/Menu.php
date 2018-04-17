@@ -5,41 +5,47 @@
  * Date: 2018/4/3
  * Time: 13:59
  */
-class MenuModel extends DbModel {
-    // table name
-    public $table = 'menu';
-
-    public $confName = 'mysql';
+class MenuModel extends PDOModel {
 
     /**
      * 获取菜单
      * return array
      */
-    public function getMenu($parentId='',$level="1"){
-        $where='where status=1';
-        if($parentId!=''){
-            $where.=' and parentId='.$parentId;
+    public function getMenuList($role_id) {
+        $roleModel = new RoleModel();
+        $permissions = $roleModel->getPermissions($role_id);
+        if (isset($permissions['denied'])) {
+            $ids = $permissions['denied'];
+            $where = empty($ids) ? '1=1' : ' id IN ('. $this->questionMarks(count($ids)) .') ';
+        } else {
+            $ids = $permissions['access'];
+            $where = empty($ids) ? '1=0' : ' id NOT IN ('. $this->questionMarks(count($ids)) .') ';
         }
-        if($level!=''){
-            $where.=' and level in ('.$level.')';
+
+        $menus = $this->getAll('SELECT * FROM menu WHERE status=0 AND is_show=1 AND '.$where.' order by pid ASC,list_order ASC ', $ids);
+        $menu = [];
+        foreach ($menus as $id => $m) {
+            $menu[$m['pid']][] = $m;
         }
-        $menu_db=$this->getAll('select * from menu '.$where.' order by level asc,listorder asc');
-        return $menu_db;
+        return $menu;
     }
 
-    public function changeMenuValue($field,$id,$value){
-        $status=$this->set($id,$field,$value);
-        return $status;
+    /**
+     * @param $node
+     * @return mixed
+     */
+    function getNodeName($node){
+        $sql = 'SELECT n.node,n.href,p.node p_node,p.href p_href FROM menu n LEFT JOIN menu p ON n.pid=p.id '
+            .' WHERE FIND_IN_SET(?, n.perm_route)';
+        return $this->getRow($sql, array($node));
     }
 
-    public function delMenu($id){
-        $status=$this->del($id);
-        return $status;
-    }
-
-    public function get_level($id){
-        $level=$this->getColumn('select level from menu where id='.$id);
-        return $level+1;
+    /**
+     * @param $url
+     * @return mixed
+     */
+    public function getMenuId($url) {
+        return $this->getColumn("SELECT id FROM menu WHERE FIND_IN_SET(?, perm_route)", array($url));
     }
 
     /**
@@ -55,24 +61,7 @@ class MenuModel extends DbModel {
         }
     }
 
-    /**
-     * 获取菜单信息
-     * @return string
-     */
-    public function getMenuInfo($id){
-        return $this->get($id);
-    }
 
-    /**
-     * 修改菜单
-     * @return string
-     */
-    public function editMenu($param=array(),$id){
-        if(count($param)>0){
-            $status=$this->edit($id,$param);
-            return $status;
-        }else{
-            return false;
-        }
-    }
+
+
 }
