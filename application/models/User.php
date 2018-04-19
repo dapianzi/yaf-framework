@@ -62,7 +62,7 @@ class UserModel extends PDOModel {
      */
     public function setUserLogsExpire($time = ''){
         if (empty($time)) {
-            $time = date('Y-m-d H:i:s', time()-365*86400);
+            $time = date('Y-m-d H:i:s', time()-90*86400);
         }
         if(preg_match("/^\d{4}(-\d{2}){2} (\d{2}:){2}\d{2}$/i")){
             return $this->execute("UPDATE {$this->table} SET status=-1 WHERE adate < ? ", array($time) );

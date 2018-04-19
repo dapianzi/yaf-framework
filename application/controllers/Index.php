@@ -16,7 +16,7 @@ class IndexController extends BaseController {
         $menuModel = new MenuModel();
 
         $menuList = $menuModel->getMenuList($this->user['role_id']);
-		$this->assign('menu', $menuList);
+		$this->assign('menu', json_encode($menuList, JSON_UNESCAPED_SLASHES));
 		// extra info
 		$this->assign('unread_messages', 0);
 	}

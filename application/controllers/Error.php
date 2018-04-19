@@ -32,18 +32,22 @@ class ErrorController extends Yaf_Controller_Abstract {
             default:
             case SYS_EXCEPTION: {
 //				header("HTTP/1.1 404 Not Found");
-                if ($this->getRequest()->isXmlHttpRequest()) {
-                    gf_ajax_error($exception->getMessage());
-                }
+
                 break;
             }
         }
         gf_logfile($exception->getMessage());
         if (Yaf_Application::app()->environ() !== 'product') {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                gf_ajax_error($exception->getMessage());
+            }
             $this->getView()->assign('exception', $exception);
             $this->getView()->display('public/error.html');
             return FALSE;
         } else {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                gf_ajax_error('Invalid Request');
+            }
             $this->getView()->assign('error', '');
             $this->getView()->display('public/404.html');
             return FALSE;

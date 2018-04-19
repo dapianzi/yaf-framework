@@ -27,4 +27,8 @@ class RoleModel extends PDOModel {
         return ['access'=> []];
     }
 
+    public function getAllPerms() {
+        $perm = $this->getColumn("SELECT permissions FROM roles WHERE id=?", [$role_id]);
+    }
+
 }

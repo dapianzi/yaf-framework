@@ -76,6 +76,20 @@ function gf_shell_color($str, $color='') {
     return sprintf("\033[40;%dm%s\033[0m", $color, $str);
 }
 
+/**
+ * 密码哈希算法
+ * @param $pwd
+ * @param $salt
+ * @return string
+ */
+function gf_encrypt_pwd($pwd, $salt) {
+    return sha1($pwd . $salt);
+}
+
+/**
+ * 文件日志
+ * @param $s
+ */
 function gf_logfile($s) {
     $f = fopen(LOG_FILE, 'a+');
     fwrite($f, '['.gf_now().'] '.$s."\n");

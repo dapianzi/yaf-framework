@@ -23,6 +23,19 @@ class MenuModel extends PDOModel {
         }
 
         $menus = $this->getAll('SELECT * FROM menu WHERE status=0 AND is_show=1 AND '.$where.' order by pid ASC,list_order ASC ', $ids);
+        return $this->_assocByPid($menus);
+    }
+
+    /**
+     * 获取菜单
+     * return array
+     */
+    public function getAllMenuList() {
+        $menus = $this->getAll('SELECT * FROM menu order by pid ASC,list_order ASC ');
+        return $this->_assocByPid($menus);
+    }
+
+    private function _assocByPid($menus) {
         $menu = [];
         foreach ($menus as $id => $m) {
             $menu[$m['pid']][] = $m;
@@ -34,7 +47,7 @@ class MenuModel extends PDOModel {
      * @param $node
      * @return mixed
      */
-    function getNodeName($node){
+    public function getNodeName($node){
         $sql = 'SELECT n.node,n.href,p.node p_node,p.href p_href FROM menu n LEFT JOIN menu p ON n.pid=p.id '
             .' WHERE FIND_IN_SET(?, n.perm_route)';
         return $this->getRow($sql, array($node));

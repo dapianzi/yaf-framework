@@ -32,7 +32,7 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
         msg_ok: function(msg, _callbk) {
             this.msg(msg, {
                 icon: 6,
-                time: 2000
+                time: 1500
             }, function(){
                 _callbk && _callbk();
             });
@@ -40,7 +40,7 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
         msg_error: function(msg, _callbk) {
             this.msg(msg, {
                 icon: 5,
-                time: 3000
+                time: 2500
             }, function(){
                 _callbk && _callbk();
             });
@@ -76,6 +76,15 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
             }
             // self.ajax_lock = true;
             var self = this;
+            _ok = _ok || function() {
+                self.msg_ok('操作成功！');
+            };
+            _fail = _fail || function(res) {
+                self.alert_error(res.msg);
+            };
+            var loading = layer.load(1, {
+                shade: [0.1,'#fff']
+            });
             $.ajax({
                 url: _url,
                 type: 'POST',
@@ -83,21 +92,19 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
                 dataType: 'JSON',
                 timeOut: 15000,
                 success: function (res) {
-                    if (res.code === 0) {
-                        _ok && _ok(res);
-                    } else {
-                        _fail ? _fail(res) : self.alert_error(res.msg);
-                    }
+                    res.code === 0 ? _ok(res) : _fail(res);
                 },
                 error: function (xhr, status, err) {
                     self.msg_error('系统出错了['+status+']：' + err);
                 },
                 complete: function () {
                     self.ajax_lock = false;
+                    layer.close(loading);
                 }
             })
         },
         ajax_get: function (_url, _ok) {
+            var self = this;
             $.ajax({
                 url: _url,
                 type: 'GET',
@@ -107,7 +114,24 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
                     _ok && _ok(res);
                 },
                 error: function (xhr, status, err) {
-                    js_comm.alert_error('系统出错了：' + err);
+                    self.alert_error('系统出错了：' + err);
+                }
+            })
+        },
+        ajax_get_json: function (_url, _ok) {
+            var self = this;
+            $.ajax({
+                url: _url,
+                type: 'GET',
+                dataType: 'json',
+                timeOut: 15000,
+                success: function (res) {
+                    if (res.code === 0) {
+                        _ok && _ok(res);
+                    }
+                },
+                error: function (xhr, status, err) {
+                    self.msg_error('系统出错了['+status+']：' + err);
                 }
             })
         },

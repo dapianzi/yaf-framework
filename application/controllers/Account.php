@@ -33,7 +33,7 @@ class AccountController extends BaseController {
         }
         $UserModel = new UserModel();
         $user = $UserModel->getUserByName($username);
-        if ($user && $user['password'] == sha1($password . $user['salt'])) {
+        if ($user && $user['password'] == gf_encrypt_pwd($password, $user['salt'])) {
 //            $token = $UserModel->login($user);
             Yaf_Session::getInstance()->set('user', $user['id']);
             gf_ajax_success($user);
@@ -59,11 +59,11 @@ class AccountController extends BaseController {
         if ($new_pass == '') {
             gf_ajax_error('新密码不能为空!');
         }
-        if ($userinfo['password'] != sha1($old_pass . $userinfo['salt'])) {
+        if ($userinfo['password'] != gf_encrypt_pwd($old_pass . $userinfo['salt'])) {
             gf_ajax_error('旧密码不匹配！');
         }
         // set new password
-        $res = $userModel->set($userinfo['id'], 'password', sha1($new_pass . $userinfo['salt']));
+        $res = $userModel->set($userinfo['id'], 'password', gf_encrypt_pwd($new_pass . $userinfo['salt']));
         gf_ajax_success($res);
     }
 

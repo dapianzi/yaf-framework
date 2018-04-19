@@ -1,6 +1,10 @@
 <{extends 'public/base.html'}>
-<{block name=body}>
-<style>
+
+<{block name=title}>添加菜单<{/block}>
+
+<{block name=static}>
+<style type="text/css">
+
     .icon .layui-form-radio{
         padding: 0px;
         margin: 6px 0px 0 0;
@@ -13,11 +17,15 @@
         margin-right: 10px;
         font-size: 20px;
     }
+
 </style>
+<{/block}>
+
+<{block name=body}>
+
 <div class="layui-fluid">
     <div class="layui-card">
         <{include file='public/nav.html'}>
-
         <div class="layui-card-body">
             <form class="layui-form " onsubmit="return false;" lay-filter="component-form-element">
 
