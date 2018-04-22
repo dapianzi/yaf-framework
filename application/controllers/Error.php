@@ -42,14 +42,14 @@ class ErrorController extends Yaf_Controller_Abstract {
                 gf_ajax_error($exception->getMessage());
             }
             $this->getView()->assign('exception', $exception);
-            $this->getView()->display('public/error.html');
+            $this->getView()->display('public/error.tpl');
             return FALSE;
         } else {
             if ($this->getRequest()->isXmlHttpRequest()) {
                 gf_ajax_error('Invalid Request');
             }
             $this->getView()->assign('error', '');
-            $this->getView()->display('public/404.html');
+            $this->getView()->display('public/404.tpl');
             return FALSE;
         }
 	}

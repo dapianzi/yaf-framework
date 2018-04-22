@@ -28,7 +28,7 @@ class BaseController extends Yaf_Controller_Abstract
             $userinfo = $UserModel->getUserInfo(Yaf_Session::getInstance()->get('user'));
             if (empty($userinfo)) {
                 Yaf_Session::getInstance()->del('user');
-                $this->redirect('/account/login/');
+                $this->redirect('/admin/account/login/');
             }
             if (STATUS_NO_USE == $userinfo['status']) {
                 throw new SysException('Access denied! Your account has been blocked.');
@@ -86,33 +86,77 @@ class BaseController extends Yaf_Controller_Abstract
     protected function render($action, array $parameters = null){
         $template_name = str_ireplace('Controller', '', get_class($this)).'/'.$action;
         $module = strtolower($this->getRequest()->module);
-        if ($module != $this->conf->application->dispatcher->defaultModule) {
-            $template_name = $module.'/'.$template_name;
-        }
+        $template_name = $module.'/'.$template_name;
+//        if ($module != $this->conf->application->dispatcher->defaultModule) {
+//        }
         $template_name = strtolower($template_name.'.'.$this->conf->application->view->ext);
         return $this->getView()->render($template_name, $parameters);
     }
 
-    protected function getParam($key, $default='') {
-        $s = $this->getRequest()->getParam($key, $default);
-        if (empty($s)) {
-            $s = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
+    protected function getParam($key, $args=null) {
+        $s = $this->getRequest()->getParam($key);
+        if (is_null($s)) {
+            $s = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
         }
-        return gf_safe_input($s);
+        return $this->_validInputs($key, $s, $args);
     }
 
-    protected function getQuery($key, $default='') {
-        $s = isset($_GET[$key]) ? $_GET[$key] : $default;
-        return gf_safe_input($s);
+    protected function getQuery($key, $args='') {
+        $s = isset($_GET[$key]) ? $_GET[$key] : null;
+        return $this->_validInputs($key, $s, $args);
     }
 
-    protected function getPost($key, $default='') {
-        $s = isset($_POST[$key]) ? $_POST[$key] : $default;
-        return gf_safe_input($s);
+    protected function getPost($key, $args='') {
+        $s = isset($_POST[$key]) ? $_POST[$key] : null;
+        return $this->_validInputs($key, $s, $args);
     }
 
     public function assign($key, $var) {
         $this->getView()->assign($key, $var);
+    }
+
+    public function _validInputs($key, $input, $args) {
+        if (!is_array($args) || empty($args)) {
+            return is_null($input) ? $args : $input;
+        }
+        // default
+        $args = array_merge([
+            'filter' => FALSE,
+        ], $args);
+
+        if (isset($args['null']) && is_null($input)) {
+            throw new SysException(sprintf('[%s] can not be null.', $args['null']));
+        }
+        if (isset($args['empty']) && empty($input)) {
+            throw new SysException(sprintf('[%s] can not be empty.', $args['empty']));
+        }
+        if (isset($args['in']) && !in_array($input, explode(',', $args['in']))) {
+            throw new SysException('Invalid Params.');
+        }
+        if (isset($args['not']) && in_array($input, explode(',', $args['not']))) {
+            throw new SysException('Invalid Params.');
+        }
+        if (isset($args['expr']) && !preg_match($args['expr'], $input)) {
+            throw new SysException('Invalid Params.');
+        }
+        if (isset($args['type'])) {
+            switch (strtolower($args['type'])) {
+                case 'int':
+                    $input = is_array($input) ? array_map('intval', $input) : intval($input);
+                    break;
+                case 'array':
+                    $input = is_array($input) ? $input : [$input];
+                    break;
+                default:
+            }
+        }
+        if (isset($args['default']) && is_null($input)) {
+            $input = $args['default'];
+        }
+        if (isset($args['filter']) && $args['filter']) {
+            $input = gf_safe_input($input);
+        }
+        return $input;
     }
 
 }

@@ -14,8 +14,7 @@ class UserModel extends PDOModel {
      * @return array
      */
     public function getUserInfo($uid) {
-        $sql = 'SELECT u.id,u.username,u.nickname,u.status,u.salt,u.password,u.email,r.id role_id,r.status role_status FROM user u '.
-            ' LEFT JOIN roles r ON u.role_id=r.id WHERE u.id=? ';
+        $sql = 'SELECT u.*,r.status role_status FROM user u LEFT JOIN roles r ON u.role_id=r.id WHERE u.id=? ';
         return $this->getRow($sql, array($uid));
     }
 
@@ -25,8 +24,16 @@ class UserModel extends PDOModel {
      * @return mixed
      */
     public function getUserByName($username) {
-        $sql = 'SELECT u.id,u.username,u.status,u.role_id,u.password,u.salt FROM user u WHERE u.username=? ';
-        return $this->getRow($sql, array($username));
+        return $this->getRow('SELECT u.* FROM user u WHERE u.username=?', array($username));
+    }
+
+    public function getUsers($is_super_admin) {
+        $sql = 'SELECT u.id,u.username,u.nickname,u.status,u.email,u.role_id,u.last_login,u.last_login_ip,'.
+            ' r.role,r.status role_status FROM user u LEFT JOIN roles r ON u.role_id=r.id ORDER BY u.role_id ';
+        if (!$is_super_admin) {
+            $sql.= ' WHERE u.role_id<>'.ROLE_SUPERADMIN;
+        }
+        return $this->getAll($sql);
     }
 
     /**
@@ -48,7 +55,7 @@ class UserModel extends PDOModel {
      */
     public function getUserLogs($from, $to, $offset=0, $limit=50){
         $sql = 'SELECT l.*,u.username FROM logs l LEFT JOIN user u ON l.uid=u.id '
-            .' WHERE u.status=1 AND u.adate BETWEEN ? AND ? ORDER BY adate DESC limit '.$offset.','.$limit;
+            .' WHERE l.status=1 AND l.adate BETWEEN ? AND ? ORDER BY adate DESC limit '.$offset.','.$limit;
         $data = $this->getAll($sql, array($from, $to));
         $count = $this->getCount('SELECT id FROM logs WHERE status=1 AND adate BETWEEN ? AND ?', array($from, $to));
         return array($data, $count);
@@ -64,19 +71,33 @@ class UserModel extends PDOModel {
         if (empty($time)) {
             $time = date('Y-m-d H:i:s', time()-90*86400);
         }
-        if(preg_match("/^\d{4}(-\d{2}){2} (\d{2}:){2}\d{2}$/i")){
-            return $this->execute("UPDATE {$this->table} SET status=-1 WHERE adate < ? ", array($time) );
+        if(preg_match("/^\d{4}(-\d{2}){2} (\d{2}:){2}\d{2}$/i", $time)){
+            return $this->execute("UPDATE logs SET status=-1 WHERE adate < ? ", array($time) );
         } else {
             throw new SysException('Datetime format incorrect!');
         }
     }
 
-
+    /**
+     * 处理登录流程
+     * @param $user
+     * @return string
+     * @throws Exception
+     */
     public function login($user) {
+        // record login
+        $id = $user['id'];
+        $data = [
+            'last_login' => gf_now(),
+            'last_login_ip' => gf_get_remote_addr(),
+        ];
+        $this->mod($id, $data);
+        $token = gf_encrypt_pwd(time(), gf_rand_str(8));
 //        $this->insert('session', array(
 //            'uid' => $user['id'],
 //            'token' => $user['id'],
 //        ));
+        return $token;
     }
 
 }

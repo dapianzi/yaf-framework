@@ -67,7 +67,7 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
                 area: '60%',
                 skin: 'layui-layer-rim',
             }, option);
-            layer.open(option);
+            return layer.open(option);
         },
 
         ajax: function (_url, _data, _ok, _fail) {

@@ -16,12 +16,11 @@ class MenuModel extends PDOModel {
         $permissions = $roleModel->getPermissions($role_id);
         if (isset($permissions['denied'])) {
             $ids = $permissions['denied'];
-            $where = empty($ids) ? '1=1' : ' id IN ('. $this->questionMarks(count($ids)) .') ';
+            $where = empty($ids) ? '1=1' : ' id NOT IN ('. $this->questionMarks(count($ids)) .') ';
         } else {
             $ids = $permissions['access'];
-            $where = empty($ids) ? '1=0' : ' id NOT IN ('. $this->questionMarks(count($ids)) .') ';
+            $where = empty($ids) ? '1=0' : ' id IN ('. $this->questionMarks(count($ids)) .') ';
         }
-
         $menus = $this->getAll('SELECT * FROM menu WHERE status=0 AND is_show=1 AND '.$where.' order by pid ASC,list_order ASC ', $ids);
         return $this->_assocByPid($menus);
     }
@@ -30,8 +29,8 @@ class MenuModel extends PDOModel {
      * 获取菜单
      * return array
      */
-    public function getAllMenuList() {
-        $menus = $this->getAll('SELECT * FROM menu order by pid ASC,list_order ASC ');
+    public function getAllMenuList($field = '*') {
+        $menus = $this->getAll('SELECT ' . $field . ' FROM menu order by pid ASC,list_order ASC ');
         return $this->_assocByPid($menus);
     }
 

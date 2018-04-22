@@ -10,6 +10,10 @@ class RoleModel extends PDOModel {
 
     public $table = 'roles';
 
+    public function getEditableRoles() {
+        return $this->getAll("SELECT id,role FROM roles WHERE id<>? AND status=?", array(ROLE_SUPERADMIN, STATUS_OK));
+    }
+
     public function validPermission($node_id, $role_id) {
         $perm = $this->getPermissions($role_id);
         if (isset($perm['denied'])) {
@@ -28,7 +32,16 @@ class RoleModel extends PDOModel {
     }
 
     public function getAllPerms() {
-        $perm = $this->getColumn("SELECT permissions FROM roles WHERE id=?", [$role_id]);
+        $perms = $this->getKeyValue("SELECT id,permissions FROM roles WHERE id<>? AND status=?", [ROLE_SUPERADMIN, STATUS_OK]);
+        foreach ($perms as $k=>&$v) {
+            $tmp = json_decode($v, TRUE);
+            if ($tmp) {
+                $type = array_key_exists('denied', $tmp) ? 'denied' : 'access';
+                $node = isset($tmp[$type]) ? $tmp[$type] : [];
+                $v = ['type' => $type, 'node' => $node];
+            }
+        }
+        return $perms;
     }
 
 }
