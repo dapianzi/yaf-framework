@@ -4,7 +4,7 @@
 <{block name=body}>
 <div class="layui-fluid">
     <div class="layadmin-content">
-        <div class="demoTable">
+        <div class="demoTable layui-form">
             <div class="layui-inline" style="width: 350px;">
                 <input class="layui-input" name="time" id="time" placeholder="yyyy-MM-dd HH:mm:ss - yyyy-MM-dd HH:mm:ss">
             </div>
@@ -12,7 +12,7 @@
             <button class="layui-btn" data-action="reload">搜索</button>
             <button class="layui-btn layui-btn-danger" data-action="del">删除一月前数据</button>
         </div>
-        <table class="layui-table" lay-data="{height: 'full-100',cellMinWidth: 80,url:'/admin/system/logsList/', id:'log-table',page: true,limit:18}" lay-filter="log-table">
+        <table class="layui-table" lay-data="{height: 'full-100',cellMinWidth: 80,url:'/admin/system/logsList/', id:'log-table',page: true,limit:20}" lay-filter="log-table">
             <thead>
             <tr>
                 <th lay-data="{field:'adate',sort:true,width:180}">时间</th>

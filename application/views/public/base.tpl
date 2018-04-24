@@ -60,9 +60,9 @@
              * 例如： cus_echarts
              */
             c_comm: 'js/lib/comm',//配置comm模块的路径
-            c_echarts:'js/lib/echarts'
+            c_charts:'js/lib/echarts'
         });
     </script>
-    <{block name=script}><{/block}>
+    <{block name=script}><!-- 5ms --><{/block}>
 </body>
 </html>

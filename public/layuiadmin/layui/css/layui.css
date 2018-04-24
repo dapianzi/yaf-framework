@@ -1774,9 +1774,9 @@ a cite {
 
 .layui-btn {
 	display: inline-block;
-	height: 38px;
-	line-height: 38px;
-	padding: 0 18px;
+	height: 32px;
+	line-height: 32px;
+	padding: 0 12px;
 	background-color: #009688;
 	color: #fff;
 	white-space: nowrap;
@@ -1862,16 +1862,16 @@ a cite {
 }
 
 .layui-btn-lg {
-	height: 44px;
-	line-height: 44px;
-	padding: 0 25px;
+	height: 38px;
+	line-height: 38px;
+	padding: 0 20px;
 	font-size: 16px
 }
 
 .layui-btn-sm {
-	height: 30px;
-	line-height: 30px;
-	padding: 0 10px;
+	height: 28px;
+	line-height: 28px;
+	padding: 0 8px;
 	font-size: 12px
 }
 
@@ -1938,9 +1938,9 @@ a cite {
 }
 
 .layui-input,.layui-select,.layui-textarea {
-	height: 38px;
+	height: 32px;
 	line-height: 1.3;
-	line-height: 38px\9;
+	line-height: 32px\9;
 	border-width: 1px;
 	border-style: solid;
 	background-color: #fff;
@@ -2002,7 +2002,7 @@ a cite {
 .layui-form-label {
 	float: left;
 	display: block;
-	padding: 9px 15px;
+	padding: 6px 15px;
 	width: 80px;
 	font-weight: 400;
 	line-height: 20px;
@@ -2076,7 +2076,7 @@ a cite {
 	display: none;
 	position: absolute;
 	left: 0;
-	top: 42px;
+	top: 35px;
 	padding: 5px 0;
 	z-index: 999;
 	min-width: 100%;
@@ -2091,7 +2091,7 @@ a cite {
 
 .layui-form-select dl dd,.layui-form-select dl dt {
 	padding: 0 10px;
-	line-height: 36px;
+	line-height: 28px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis
@@ -2150,7 +2150,7 @@ a cite {
 
 .layui-form-selectup dl {
 	top: auto;
-	bottom: 42px
+	bottom: 35px
 }
 
 .layui-select-none {
@@ -2287,11 +2287,11 @@ a cite {
 
 .layui-form-switch {
 	position: relative;
-	height: 22px;
-	line-height: 22px;
+	height: 20px;
+	line-height: 20px;
 	width: 42px;
 	padding: 0 5px;
-	margin-top: 8px;
+	margin-top: 5px;
 	border: 1px solid #d2d2d2;
 	border-radius: 20px;
 	cursor: pointer;
@@ -2303,9 +2303,9 @@ a cite {
 .layui-form-switch i {
 	position: absolute;
 	left: 5px;
-	top: 3px;
-	width: 16px;
-	height: 16px;
+	top: 2px;
+	width: 15px;
+	height: 15px;
 	border-radius: 20px;
 	background-color: #d2d2d2;
 	-webkit-transition: .1s linear;
@@ -2387,8 +2387,8 @@ a cite {
 
 .layui-form-pane .layui-form-label {
 	width: 110px;
-	padding: 8px 15px;
-	height: 38px;
+	padding: 5px 15px;
+	height: 32px;
 	line-height: 20px;
 	border-width: 1px;
 	border-style: solid;
@@ -2809,7 +2809,7 @@ a cite {
 
 .layui-table td,.layui-table th {
 	position: relative;
-	padding: 9px 15px;
+	padding: 6px 10px;
 	min-height: 20px;
 	line-height: 20px;
 	font-size: 14px
@@ -2941,9 +2941,9 @@ a cite {
 }
 
 .layui-table-cell {
-	height: 28px;
-	line-height: 28px;
-	padding: 0 15px;
+	height: 24px;
+	line-height: 24px;
+	padding: 0 10px;
 	position: relative;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -3096,7 +3096,7 @@ a cite {
 	top: 0;
 	width: 100%;
 	height: 100%;
-	padding: 0 14px 1px;
+	padding: 0 9px 1px;
 	border-radius: 0;
 	box-shadow: 1px 1px 20px rgba(0,0,0,.15)
 }

@@ -148,23 +148,34 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
                 cbf && cbf();
             });
         },
-        Date: {
-
-            now: function(_offset) {
-                var defDate = {
-                    date: 'yyyy-MM-dd H:m:s',
-                        year: 'yyyy',
-                        month: 'MM',
-                        day: 'dd',
-                        hours: 'H',
-                        minutes: 'm',
-                        seconds: 's',
-                },
-                defDateOffsetKey = {
+        date: {
+            defDate: {
+                datetime: 'yyyy-MM-dd H:m:s',
+                date: 'yyyy-MM-dd',
+                time: 'H:m:s',
+                year: 'yyyy',
+                month: 'MM',
+                day: 'dd',
+                hours: 'H',
+                minutes: 'm',
+                seconds: 's',
+            },
+            date: function(_offset) {
+                return this.now(_offset, this.defDate.date);
+            },
+            datetime: function(_offset) {
+                return this.now(_offset, this.defDate.datetime);
+            },
+            time: function(_offset) {
+                return this.now(_offset, this.defDate.time);
+            },
+            now: function(_offset, _fmt) {
+                _fmt = _fmt || this.defDate.datetime;
+                var defDateOffsetKey = {
                     days:24*3600*1000,
-                        hours:3600*1000,
-                        seconds:1000,
-                        minutes:60*1000
+                    hours:3600*1000,
+                    seconds:1000,
+                    minutes:60*1000
                 },
                 now =new Date()*1;
                 if (_offset) {
@@ -184,7 +195,7 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
                         throw new Error('提供的格式需要为[+|-][整数][days|hours|minutes|seconds],如:-1 days +8 days');
                     }
                 }
-                return this.fmtDate(now, defDate.date);
+                return this.fmtDate(now, _fmt);
 
             },
             fmtDate: function(_time, _fmt) {
@@ -221,7 +232,28 @@ layui.define(['layer'/* 依赖的组件 */], function(exports){
                 }
                 return _fmt;
             }
+        },
+        storage: {
+            get: function (name) {
+                return JSON.parse(localStorage.getItem(name))
+            },
+            set: function (name, val) {
+                localStorage.setItem(name, JSON.stringify(val))
+            },
+            add: function (name, addVal) {
+                let oldVal = this.get(name)
+                let newVal = oldVal.concat(addVal)
+                this.set(name, newVal)
+            }
+        },
+
+        // init
+        init: function() {
+            if (!this.storage.get('os')) {
+                this.storage.set('os', 'all');
+            }
         }
     };
+    comm.init();
     exports('c_comm', comm);
 });

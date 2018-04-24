@@ -66,7 +66,7 @@
     <script src="/swiper/js/swiper.min.js"></script>
     <script>
         var mySwiper = new Swiper ('.swiper-container', {
-            // direction: '',
+            autoplay: true,
             slidesPerView: 'auto',
             centeredSlides: true,
             loop: true,
@@ -83,6 +83,6 @@
             // scrollbar: {
             //     el: '.swiper-scrollbar',
             // },
-        })
+        });
     </script>
 <{/block}>
